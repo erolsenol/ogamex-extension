@@ -1,3 +1,22 @@
+function mathStabileRound(number) {
+  const roundedNumber = Math.round(number + 1);
+  if (roundedNumber - 1 > number) return Math.round(number);
+  else return roundedNumber;
+}
+function getRndInteger(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function isArrayEqual(val1, val2) {
+  let isEqual = true;
+  if (val2 && val1.length === val2.length) {
+    for (i = 0; i < val1.length; i++) {
+      if (val1[i] !== val2[i]) isEqual = false;
+    }
+  } else isEqual = false;
+  return isEqual;
+}
+
 function storageSet(fieldName, value) {
   localStorage.setItem(fieldName, JSON.stringify(value));
 }
@@ -8,6 +27,12 @@ function StorageGetInitialize(name, value) {
   let item = storageGet(name);
   if (!item) item = value;
   return item;
+}
+function MenuClick(index) {
+  const left_menu = getIdItem("left-menu-1");
+  if (left_menu) left_menu.children[index].click();
+  else return false;
+  return true;
 }
 
 const gameEnum = {
@@ -38,6 +63,7 @@ let gameStatus = StorageGetInitialize("gameStatus", "NONE");
 let gameTimer = StorageGetInitialize("gameTimer", new clssGameTimer());
 let totalResource = StorageGetInitialize("totalResource", 0);
 let attackCoordinate = StorageGetInitialize("attackCoordinate", [0, 0, 0]);
+let attacked = StorageGetInitialize("attacked", false);
 
 // console.log("gameTimer", gameTimer);
 // console.log("gameStatus", gameStatus);
@@ -150,6 +176,7 @@ top: 15px;
 );
 btngalaxyRight.addEventListener("click", () => {
   galaxyRouteInitialize();
+  console.log("gameStatus GALAYSPY Set");
   gameStatus = "GALAXYSPY";
   storageSet("gameStatus", gameStatus);
   galaxyStart(storageGet("galaxySpy"));
@@ -168,7 +195,9 @@ btngalaxyStop.addEventListener("click", () => {
   const direction = storageGet("galaxySpy");
   if (direction) {
     direction.start = false;
+    gameStatus = "NONE";
     storageSet("galaxySpy", direction);
+    storageSet("gameStatus", gameStatus);
 
     const left_menu = getIdItem("left-menu-1");
     if (left_menu) left_menu.children[0].children[0].click();
@@ -185,7 +214,10 @@ top: 18px;
 `
 );
 btnMessageClear.addEventListener("click", () => {
-  messageClear();
+  gameStatus = "MESSAGE";
+  storageSet("gameStatus", gameStatus);
+  pageRefresh();
+  // messageClear();
 });
 
 let intervalSpyReportAttack;
@@ -364,10 +396,12 @@ right: 27px;
 cbDiscovery.addEventListener("click", () => {
   storageSet("cbDiscovery", cbDiscovery.checked);
   gameRoute.discovery = cbDiscovery.checked;
+
+  gameStatus = "DISCOVERY";
+  storageSet("gameStatus", gameStatus);
   storageSet("gameRoute", gameRoute);
   pageRefresh();
 });
-cbDiscovery.checked = gameRoute.discovery;
 
 let btnTest = document.createElement("button");
 btnTest.innerText = "Test";
@@ -453,16 +487,6 @@ let _currentGalaxy = 0,
   _currentSystem = 0,
   _probes = 0;
 
-function mathStabileRound(number) {
-  const roundedNumber = Math.round(number + 1);
-  if (roundedNumber - 1 > number) return Math.round(number);
-  else return roundedNumber;
-}
-
-function getRndInteger(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 function getIdItem(itemId = "") {
   const domElement = document.getElementById(itemId);
   if (domElement !== null) return domElement;
@@ -535,7 +559,11 @@ function dataInitialize() {
   //Düşman Saldırıyor Mu
   const header = getIdItem("header");
   if (header) {
-    if (header.children[3].getAttribute("class").search("hostile") > -1) {
+    if (
+      header.children[3].getAttribute("class").search("hostile") > -1 &&
+      header.children[3].children[0].children[2].children[1].innerText !==
+        "Casusluk"
+    ) {
       gameStatusBefore = gameStatus;
       gameStatus = "UNDERATTACK";
 
@@ -722,6 +750,8 @@ function galaxyStart(direction) {
       return;
     }
 
+    let isSpySend = false;
+
     const maxFleetErr = getDOMItem(
       "button",
       "class",
@@ -731,78 +761,78 @@ function galaxyStart(direction) {
       maxFleetErr.click();
       const decreaseSpySkip = parseInt(storageGet("intSpySkip")) - 1;
       storageSet("intSpySkip", decreaseSpySkip);
-      return;
-    }
+    } else {
+      let intSpySkip = StorageGetInitialize("intSpySkip", 0);
+      let spySkip = 0;
+      const galaxyRows =
+        galaxyContainer.children[0].children[1].children[0].children;
+      for (let i = 1; i < galaxyRows.length - 1; i++) {
+        const currentRowClass = galaxyRows[i].getAttribute("class");
+        const planetIsSend = galaxyRows[i].children[0].children;
+        if (
+          currentRowClass.search("filterInactive") > -1 &&
+          currentRowClass.search("filterVacation") < 0
+          // && planetIsSend.length < 2
+        ) {
+          console.log("intSpySkip", intSpySkip);
+          if (intSpySkip <= spySkip) {
+            galaxyRows[i].children[6].children[0].dispatchEvent(clickEvent);
+            isSpySend = true;
 
-    let isSpySend = false;
-    let intSpySkip = StorageGetInitialize("intSpySkip", 0);
-    let spySkip = 0;
-    const galaxyRows =
-      galaxyContainer.children[0].children[1].children[0].children;
-    for (let i = 1; i < galaxyRows.length - 1; i++) {
-      const currentRowClass = galaxyRows[i].getAttribute("class");
-      if (
-        currentRowClass.search("filterInactive") > -1 &&
-        currentRowClass.search("filterVacation") < 0
-      ) {
-        console.log("intSpySkip", intSpySkip);
-        if (intSpySkip <= spySkip) {
-          galaxyRows[i].children[6].children[0].dispatchEvent(clickEvent);
-          isSpySend = true;
-
-          storageSet("intSpySkip", (intSpySkip += 1));
-          break;
-        } else spySkip += 1;
+            storageSet("intSpySkip", (intSpySkip += 1));
+            break;
+          } else spySkip += 1;
+        }
       }
-    }
 
-    if (isSpySend) return;
-    storageSet("intSpySkip", 0);
-    if (direction.direction === 1) {
-      direction.system = direction.system - 1;
-      const stopSystemVal = getRndInteger(1, 60);
-      console.log("stopSystemVal", typeof stopSystemVal);
-      console.log("direction.system", typeof direction.system);
-      if (stopSystemVal > direction.system) {
-        direction.galaxy = direction.galaxy - 1;
+      if (isSpySend) return;
+      storageSet("intSpySkip", 0);
+      if (direction.direction === 1) {
+        direction.system = direction.system - 1;
+        const stopSystemVal = getRndInteger(1, 60);
+        if (stopSystemVal > direction.system) {
+          direction.galaxy = direction.galaxy - 1;
 
-        if (direction.galaxy < 1) {
-          direction.start = false;
-          clearInterval(galaxySpyInterval);
-          gameStatus = "MESSAGE";
-          storageSet("gameStatus", gameStatus);
-        } else
-          galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(
-            clickEvent
-          );
+          if (direction.galaxy < 1) {
+            direction.start = false;
+            // clearInterval(galaxySpyInterval);
+            gameStatus = "MESSAGE";
+            storageSet("gameStatus", gameStatus);
+            MenuClick(0);
+          } else {
+            getIdItem("btnSystemLeft").click();
+            // galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(clickEvent);
+          }
+        }
+      } else if (direction.direction === 0) {
+        console.log("direction.system", direction.system);
+        direction.system = direction.system + 1;
+        console.log("direction.system", direction.system);
+        const stopSystemVal = getRndInteger(440, 499);
+        if (stopSystemVal < direction.system) {
+          direction.galaxy = direction.galaxy + 1;
+
+          if (direction.galaxy > 4) {
+            direction.start = false;
+            // clearInterval(galaxySpyInterval);
+            gameStatus = "MESSAGE";
+            storageSet("gameStatus", gameStatus);
+            MenuClick(0);
+          } else {
+            getIdItem("btnSystemRight").click();
+            // galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(clickEvent);
+          }
+        }
       }
-    } else if (direction.direction === 0) {
-      console.log("direction.system", direction.system);
-      direction.system = direction.system + 1;
-      console.log("direction.system", direction.system);
-      const stopSystemVal = getRndInteger(440, 499);
-      if (stopSystemVal < direction.system) {
-        direction.galaxy = direction.galaxy + 1;
 
-        if (direction.galaxy > 4) {
-          direction.start = false;
-          clearInterval(galaxySpyInterval);
-          gameStatus = "MESSAGE";
-          storageSet("gameStatus", gameStatus);
-        } else
-          galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(
-            clickEvent
-          );
-      }
+      storageSet("galaxySpy", {
+        galaxy: direction.galaxy,
+        system: direction.system,
+        direction: direction.direction,
+        start: direction.start,
+      });
+      console.log("galaxySpy", storageGet("galaxySpy"));
     }
-
-    storageSet("galaxySpy", {
-      galaxy: direction.galaxy,
-      system: direction.system,
-      direction: direction.direction,
-      start: direction.start,
-    });
-    console.log("galaxySpy", storageGet("galaxySpy"));
   } else {
     const left_Menu = getIdItem("left-menu-1");
     if (left_Menu) left_Menu.children[8].children[0].click();
@@ -814,6 +844,12 @@ function cargoCapacity() {
   if (lightCargoCapacity < 1 || heavyCargoCapacity < 1) {
     const hangar_container = getIdItem("hangar-container");
     if (hangar_container) {
+      const ajax_modal_container = getIdItem("ajax-modal-container");
+      if (ajax_modal_container) {
+        setInterval(() => {
+          ajax_modal_container.children[0].children[1].click();
+        }, 500);
+      }
       if (lightCargoCapacity < 1) {
         const ship_info_modal = getIdItem("ship-info-modal");
         const detail_LIGHT_CARGO = getIdItem("detail-LIGHT_CARGO");
@@ -885,6 +921,7 @@ function messageClear() {
           return;
         }
 
+        let isDelete = false;
         for (let i = 1; i < messageRow.length - 2; i++) {
           if (messageRow[i].children[3].children.length > 1) {
             const messageContentTable =
@@ -926,38 +963,56 @@ function messageClear() {
                       .innerText
                   )
                 );
-                if (totalResource > 500000000) {
-                  const coordinateArr = messageRow[
-                    i
-                  ].children[1].children[0].children[0].children[0].innerText
-                    .substring(8)
-                    .replaceAll("]", "")
-                    .split(":");
-                  console.log("coordinateArr", coordinateArr);
-                  console.log("totalResource", totalResource);
-                  storageSet("attackCoordinate", coordinateArr);
+                if (totalResource > 250000000) {
+                  if (!isDelete) {
+                    const coordinateText =
+                      messageRow[i].children[1].children[0].children[0]
+                        .children[0].innerText;
 
-                  gameStatus = "ATTACK";
-                  storageSet("gameStatus", gameStatus);
-                  storageSet("totalResource", totalResource);
+                    const coordinateArr = coordinateText
+                      .substring(coordinateText.indexOf("[") + 1)
+                      .replaceAll("]", "")
+                      .split(":");
 
-                  messageRow[i].children[3].children[5].click();
-                  break;
+                    if (
+                      !storageGet("attacked") &&
+                      !isArrayEqual(coordinateArr, attackCoordinate)
+                    ) {
+                      //kaldik
+                      console.log("girdiii");
+                      gameStatus = "ATTACK";
+                      storageSet("attackCoordinate", coordinateArr);
+                      storageSet("totalResource", totalResource);
+                      storageSet("gameStatus", gameStatus);
+
+                      messageRow[i].children[3].children[5].click();
+                      break;
+                    } else {
+                      storageSet("attacked", false);
+                      console.log("Bir Önceki Saldırılan Siliniyor");
+                      messageRow[i].children[1].children[1].children[1].click();
+                      isDelete = true;
+                    }
+                  }
                 } else {
                   messageRow[i].children[1].children[1].children[1].click();
-                  break;
+                  isDelete = true;
+                  // break;
                 }
               } else {
                 messageRow[i].children[1].children[1].children[1].click();
-                break;
+                isDelete = true;
+                // break;
               }
             } else {
               messageRow[i].children[1].children[1].children[1].click();
-              break;
+              isDelete = true;
+              // break;
             }
           } else {
             messageRow[i].children[1].children[1].children[1].click();
-            break;
+            isDelete = true;
+            // break;
           }
         }
       } else {
@@ -976,23 +1031,124 @@ function messageClear() {
 }
 
 function enemyAttack() {
-  const fleet_content = getIdItem("fleet-content");
-  if (fleet_content) {
-    if (totalFleet > currentFleet + 1) {
+  const knownCargoCapacity = cargoCapacity();
+  if (knownCargoCapacity) {
+    const fleet_content = getIdItem("fleet-content");
+    if (fleet_content) {
+      if (totalFleet > currentFleet + 1) {
+        const ships =
+          fleet_content.children[1].children[1].children[0].children;
+        for (let i = 0; i < ships.length; i++) {
+          if (
+            ships[i].children[0].getAttribute("data-ship-type") ===
+            "LIGHT_CARGO"
+          ) {
+            storageSet(
+              "LIGHT_CARGO",
+              ships[i].children[0].children[0].innerText.replaceAll(".", "")
+            );
+            const totalResource = parseInt(storageGet("totalResource"));
+
+            const lightCargoRequired = mathStabileRound(
+              totalResource / 2 / lightCargoCapacity + getRndInteger(250, 1000)
+            );
+
+            if (lightCargoRequired <= parseInt(storageGet("LIGHT_CARGO"))) {
+              ships[i].children[1].children[0].value = lightCargoRequired;
+              // break;
+            } else {
+              console.log("Yeterli Light Kargo Yok ");
+              // const totalResource = parseInt(storageGet("totalResource"));
+              // const heavyCargoRequired = mathStabileRound(
+              //   totalResource / 2 / heavyCargoCapacity + getRndInteger(100, 400)
+              // );
+              // console.log("heavyCargoRequired", heavyCargoRequired);
+              // storageSet("heavyCargoRequired", heavyCargoRequired);
+              // if (heavyCargoRequired <= parseInt(storageGet("HEAVY_CARGO"))) {
+              //   ships[i].children[1].children[0].value = heavyCargoRequired;
+              //   // break;
+              // } else {
+              //   console.log("Yeterli Heavy Kargo Yok ");
+              //   gameStatus = "NONE";
+              //   storageSet("gameStatus", gameStatus);
+              // }
+            }
+          } else if (
+            ships[i].children[0].getAttribute("data-ship-type") ===
+            "HEAVY_CARGO"
+          ) {
+            storageSet(
+              "HEAVY_CARGO",
+              ships[i].children[0].children[0].innerText.replaceAll(".", "")
+            );
+          }
+        }
+
+        // if (storageGet("attacked")) {
+        //   gameStatus = "MESSAGE";
+        //   storageSet("gameStatus", gameStatus);
+        // }
+
+        setTimeout(() => {
+          const btn_next_fleet2 = getIdItem("btn-next-fleet2");
+          if (btn_next_fleet2) {
+            btn_next_fleet2.click();
+          }
+        }, 450);
+        setTimeout(() => {
+          const fleet2_target_coords_container = getIdItem(
+            "fleet2_target_coords_container"
+          );
+          if (fleet2_target_coords_container) {
+            const coordinateArr = storageGet("attackCoordinate");
+            console.log("coordinateArr", coordinateArr);
+            fleet2_target_coords_container.children[0].value = coordinateArr[0];
+            fleet2_target_coords_container.children[1].value = coordinateArr[1];
+            fleet2_target_coords_container.children[2].value = coordinateArr[2];
+            const btn_next_fleet3 = getIdItem("btn-next-fleet3");
+            if (btn_next_fleet3) {
+              btn_next_fleet3.click();
+              // storageSet("attackCoordinate", [0, 0, 0]);
+            }
+          }
+        }, 1100);
+        setTimeout(() => {
+          const btn_submit_fleet = getIdItem("btn-submit-fleet");
+          if (btn_submit_fleet) {
+            const fleet3_content_container = getIdItem(
+              "fleet3_content_container"
+            );
+            if (fleet3_content_container)
+              fleet3_content_container.children[0].children[7].click();
+            btn_submit_fleet.click();
+            storageSet("attacked", true);
+            gameStatus = "MESSAGE";
+            storageSet("gameStatus", gameStatus);
+          }
+        }, 1850);
+      } else {
+        // lightCargoCapacity;
+        // heavyCargoCapacity;
+        //  storageSet("attackCoordinate", coordinateArr);
+        gameStatus = "NONE";
+        storageSet("gameStatus", gameStatus);
+      }
+      //kaldik
     } else {
+      const left_menu = getIdItem("left-menu-1");
+      if (left_menu) {
+        console.log("enemy attack last");
+        left_menu.children[7].children[0].click();
+      }
     }
-    //kaldik
-  } else {
-    const left_menu = getIdItem("left-menu-1");
-    if (left_menu) left_menu.children[7].children[0].click();
   }
 }
 
 let totalDiscovery = StorageGetInitialize("totalDiscovery", 0);
 let currentDiscovery = StorageGetInitialize("currentDiscovery", 0);
 
-let totalFleet = StorageGetInitialize("totalFleet", 0);
-let currentFleet = StorageGetInitialize("currentFleet", 0);
+let totalFleet = parseInt(StorageGetInitialize("totalFleet", 0));
+let currentFleet = parseInt(StorageGetInitialize("currentFleet", 0));
 
 function discoveryStart() {
   const fleetContainer = getIdItem("fleet1_content_container");
@@ -1083,7 +1239,13 @@ function discoveryStart() {
               mathStabileRound(Date.now() / 1000) +
               5;
             storageSet("gameTimer", gameTimer);
-            break;
+            gameStatus = "NONE";
+            gameRoute.discovery = false;
+            storageSet("gameRoute", gameRoute);
+            storageSet("gameStatus", gameStatus);
+            pageRefresh();
+            console.log("aaa");
+            return;
           }
         }
       } else if (fleet_movement_detail_btn) {
@@ -1096,7 +1258,30 @@ function discoveryStart() {
   }
 }
 
-let intervalDiscovery, intervalNone, galaxySpyInterval, messageInterval;
+let intervalDiscovery,
+  intervalNone,
+  galaxySpyInterval,
+  messageInterval,
+  attackInterval;
+
+function allClearIntervals(val) {
+  if (intervalDiscovery && val !== "intervalDiscovery") {
+    console.log("clear discovery");
+    clearInterval(intervalDiscovery);
+  }
+  if (galaxySpyInterval && val !== "galaxySpyInterval") {
+    console.log("clear galaxySpy");
+    clearInterval(galaxySpyInterval);
+  }
+  if (messageInterval && val !== "messageInterval") {
+    console.log("clear message");
+    clearInterval(messageInterval);
+  }
+  if (attackInterval && val !== "attackInterval") {
+    console.log("clear attack");
+    clearInterval(attackInterval);
+  }
+}
 
 (() => {
   const currentTimeSpan = mathStabileRound(Date.now() / 1000);
@@ -1115,6 +1300,7 @@ let intervalDiscovery, intervalNone, galaxySpyInterval, messageInterval;
     gameStatus = gameEnum.DISCOVERY;
     storageSet("gameStatus", gameStatus);
   } else if (
+    false &&
     gameStatus === gameEnum.NONE &&
     gameRoute.galaxySpy &&
     (gameTimer.galaxySpy === 0 || gameTimer.galaxySpy < currentTimeSpan)
@@ -1123,39 +1309,100 @@ let intervalDiscovery, intervalNone, galaxySpyInterval, messageInterval;
     storageSet("gameStatus", gameStatus);
   }
 
-  switch (gameStatus) {
-    case gameEnum.DISCOVERY:
-      if (_currentPlanet !== 0) {
-        const other_planets = getIdItem("other-planets");
-        if (other_planets) other_planets.children[0].children[0];
-      } else
-        intervalDiscovery = setInterval(() => {
-          discoveryStart();
-        }, 2000);
-    case gameEnum.GALAXYSPY:
+  if (gameStatus === "DISCOVERY") {
+    allClearIntervals("intervalDiscovery");
+    if (_currentPlanet !== 0) {
+      const other_planets = getIdItem("other-planets");
+      if (other_planets) other_planets.children[0].children[0];
+    } else if (gameRoute.discovery)
+      intervalDiscovery = setInterval(() => {
+        dataInitialize();
+        discoveryStart();
+      }, 2000);
+  } else if (gameStatus === "GALAXYSPY") {
+    allClearIntervals("galaxySpyInterval");
+    const galaxySpyStatus = storageGet("galaxySpy");
+    if (!galaxySpyStatus.start) galaxyRouteInitialize();
+    // gameStatus = "GALAXYSPY";
+    // storageSet("gameStatus", gameStatus);
+    if (gameRoute.galaxySpy || true) {
       galaxySpyInterval = setInterval(() => {
-        const direction = storageGet("galaxySpy");
-        if (direction.start) {
-          dataInitialize();
-          const swal2_actions = getDOMItem("div", "class", "swal2-actions");
-          if (swal2_actions) swal2_actions.children[0].click();
-          else galaxyStart(direction);
-        }
-      }, 1500);
-    case gameEnum.MESSAGE:
-      messageInterval = setInterval(() => {
-        //  messageClear();
-      }, 1500);
-    case gameEnum.ATTACK:
-
-    case gameEnum.NONE:
-      intervalNone = setTimeout(() => {
-        const left_menu = getIdItem("left-menu-1");
-        if (left_menu) {
-          left_menu.children[0].children[0].click();
-        }
-      }, getRndInteger(600000, 1200000));
+        dataInitialize();
+        // const swal2_actions = getDOMItem("div", "class", "swal2-actions");
+        // if (swal2_actions) swal2_actions.children[0].click();
+        // else
+        galaxyStart(storageGet("galaxySpy"));
+      }, 1300);
+    }
+  } else if (gameStatus === "MESSAGE") {
+    allClearIntervals("messageInterval");
+    messageInterval = setInterval(() => {
+      dataInitialize();
+      messageClear();
+    }, 1500);
+  } else if (gameStatus === "ATTACK") {
+    allClearIntervals("attackInterval");
+    console.log("enum ATTACK");
+    attackInterval = setInterval(() => {
+      dataInitialize();
+      enemyAttack();
+    }, 1500);
+  } else if (gameStatus === "NONE") {
+    intervalNone = setTimeout(() => {
+      const left_menu = getIdItem("left-menu-1");
+      if (left_menu) {
+        left_menu.children[0].children[0].click();
+      }
+    }, getRndInteger(500000, 1100000));
   }
+
+  // switch (gameStatus) {
+  //   case "DISCOVERY":
+  //     allClearIntervals("intervalDiscovery");
+  //     if (_currentPlanet !== 0) {
+  //       const other_planets = getIdItem("other-planets");
+  //       if (other_planets) other_planets.children[0].children[0];
+  //     } else if (gameRoute.discovery)
+  //       intervalDiscovery = setInterval(() => {
+  //         dataInitialize();
+  //         discoveryStart();
+  //       }, 2000);
+  //   case "GALAXYSPY":
+  //     allClearIntervals("galaxySpyInterval");
+  //     const galaxySpyStatus = storageGet("galaxySpy");
+  //     if (!galaxySpyStatus.start) galaxyRouteInitialize();
+  //     // gameStatus = "GALAXYSPY";
+  //     // storageSet("gameStatus", gameStatus);
+  //     if (gameRoute.galaxySpy || true) {
+  //       galaxySpyInterval = setInterval(() => {
+  //         dataInitialize();
+  //         // const swal2_actions = getDOMItem("div", "class", "swal2-actions");
+  //         // if (swal2_actions) swal2_actions.children[0].click();
+  //         // else
+  //         galaxyStart(storageGet("galaxySpy"));
+  //       }, 1500);
+  //     }
+  //   case "MESSAGE":
+  //     allClearIntervals("messageInterval");
+  //     messageInterval = setInterval(() => {
+  //       dataInitialize();
+  //       messageClear();
+  //     }, 1500);
+  //   case "ATTACK":
+  //     allClearIntervals("attackInterval");
+  //     console.log("enum ATTACK");
+  //     attackInterval = setInterval(() => {
+  //       dataInitialize();
+  //       enemyAttack();
+  //     }, 1500);
+  //   case "NONE":
+  //     intervalNone = setTimeout(() => {
+  //       const left_menu = getIdItem("left-menu-1");
+  //       if (left_menu) {
+  //         left_menu.children[0].children[0].click();
+  //       }
+  //     }, getRndInteger(500000, 1100000));
+  // }
 })();
 
 () => {
