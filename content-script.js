@@ -1032,7 +1032,7 @@ function messageClear() {
                       .innerText
                   )
                 );
-                if (totalResource > 310000000) {
+                if (totalResource > 500000000) {
                   if (!isDelete) {
                     const coordinateText =
                       messageRow[i].children[1].children[0].children[0]
