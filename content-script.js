@@ -30,7 +30,7 @@ function StorageGetInitialize(name, value) {
 }
 function MenuClick(index) {
   const left_menu = getIdItem("left-menu-1");
-  if (left_menu) left_menu.children[index].click();
+  if (left_menu) left_menu.children[index].children[0].click();
   else return false;
   return true;
 }
@@ -64,6 +64,13 @@ let gameTimer = StorageGetInitialize("gameTimer", new clssGameTimer());
 let totalResource = StorageGetInitialize("totalResource", 0);
 let attackCoordinate = StorageGetInitialize("attackCoordinate", [0, 0, 0]);
 let attacked = StorageGetInitialize("attacked", false);
+
+const lightCargoCapacity = parseInt(
+  StorageGetInitialize("lightCargoCapacity", 0)
+);
+const heavyCargoCapacity = parseInt(
+  StorageGetInitialize("heavyCargoCapacity", 0)
+);
 
 // console.log("gameTimer", gameTimer);
 // console.log("gameStatus", gameStatus);
@@ -103,13 +110,6 @@ function galaxyRouteInitialize() {
   });
 }
 if (!storageGet("galaxySpy")) galaxyRouteInitialize();
-
-const lightCargoCapacity = parseInt(
-  StorageGetInitialize("lightCargoCapacity", 0)
-);
-const heavyCargoCapacity = parseInt(
-  StorageGetInitialize("heavyCargoCapacity", 0)
-);
 
 function pageRefresh() {
   const left_menu = getIdItem("left-menu-1");
@@ -183,7 +183,7 @@ btngalaxyRight.addEventListener("click", () => {
 });
 
 let btngalaxyStop = document.createElement("button");
-btngalaxyStop.innerText = "Galaxy Stop";
+btngalaxyStop.innerText = "Game Stop";
 btngalaxyStop.setAttribute(
   "style",
   `
@@ -218,6 +218,23 @@ btnMessageClear.addEventListener("click", () => {
   storageSet("gameStatus", gameStatus);
   pageRefresh();
   // messageClear();
+});
+
+let btnDiscoveryStart = document.createElement("button");
+btnDiscoveryStart.innerText = "Discovery Start";
+btnDiscoveryStart.setAttribute(
+  "style",
+  `
+position: relative; 
+top: 18px;
+`
+);
+btnDiscoveryStart.addEventListener("click", () => {
+  gameStatus = "DISCOVERY";
+  gameRoute.discovery = true;
+  storageSet("gameStatus", gameStatus);
+  storageSet("gameRoute", gameRoute);
+  MenuClick(7);
 });
 
 let intervalSpyReportAttack;
@@ -427,8 +444,9 @@ document.getElementById("left-menu-1").append(inputSpyGalaxyValue);
 document.getElementById("left-menu-1").append(inputSpySystemValue);
 // document.getElementById("left-menu-1").append(btngalaxyLeft);
 document.getElementById("left-menu-1").append(btngalaxyRight);
-document.getElementById("left-menu-1").append(btngalaxyStop);
 document.getElementById("left-menu-1").append(btnMessageClear);
+document.getElementById("left-menu-1").append(btnDiscoveryStart);
+document.getElementById("left-menu-1").append(btngalaxyStop);
 // document.getElementById("left-menu-1").append(btnspyReportsAttack);
 // document.getElementById("left-menu-1").append(btnenemyLootAttack);
 document.getElementById("left-menu-1").append(labelSpyReportDefence);
@@ -551,6 +569,9 @@ class PlanetBuildingsSerie {
   }
 }
 
+const btn_online_bonus = getIdItem("btn-online-bonus");
+if (btn_online_bonus) btn_online_bonus.click();
+
 let _totalPlanetCount = 0,
   _currentPlanet = 0,
   _currentPlanetGalaxy = 0,
@@ -561,9 +582,33 @@ function dataInitialize() {
   if (header) {
     if (
       header.children[3].getAttribute("class").search("hostile") > -1 &&
-      header.children[3].children[0].children[2].children[1].innerText !==
-        "Casusluk"
+      header.children[3].children[0].children[2].children[1].innerText ===
+        "Saldırı"
     ) {
+      const other_planets = getIdItem("other-planets");
+      if (other_planets) {
+        for (let i = 0; i < other_planets.children.length; i++) {
+          if (
+            other_planets.children[i]
+              .getAttribute("class")
+              .search("underAttack") > -1
+          ) {
+            const myPlanetUnderAttackArr = other_planets.children[
+              i
+            ].children[0].children[2].innerText
+              .replaceAll("[", "")
+              .replaceAll("]", "")
+              .split(":");
+            storageSet("myPlanetUnderAttackArr", myPlanetUnderAttackArr);
+            console.log(
+              "myPlanetUnderAttackArr",
+              storageGet("myPlanetUnderAttackArr")
+            );
+            break;
+          }
+        }
+      }
+
       gameStatusBefore = gameStatus;
       gameStatus = "UNDERATTACK";
 
@@ -576,7 +621,11 @@ function dataInitialize() {
 
         storageSet("gameStatus", gameStatus);
         storageSet("gameStatusBefore", gameStatusBefore);
+      } else if (gameStatus === "UNDERATTACK") {
+        gameStatus = "NONE";
+        storageSet("gameStatus", gameStatus);
       }
+      storageSet("myPlanetUnderAttackArr", [0, 0, 0]);
     }
   }
   //Madenleri Al
@@ -729,7 +778,6 @@ let clickEvent = new MouseEvent("click", {
 
 function galaxyStart(direction) {
   if (!direction.start) return;
-  console.log("direction", direction);
   const galaxyContainer = getIdItem("galaxy-container");
   if (galaxyContainer) {
     const galaxyInput =
@@ -741,7 +789,6 @@ function galaxyStart(direction) {
       _currentGalaxy !== direction.galaxy ||
       _currentSystem !== direction.system
     ) {
-      console.log("eşit değil");
       galaxyInput.value = direction.galaxy;
       systemInput.value = direction.system;
       galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(
@@ -760,7 +807,8 @@ function galaxyStart(direction) {
     if (maxFleetErr) {
       maxFleetErr.click();
       const decreaseSpySkip = parseInt(storageGet("intSpySkip")) - 1;
-      storageSet("intSpySkip", decreaseSpySkip);
+      if (decreaseSpySkip > -1) storageSet("intSpySkip", decreaseSpySkip);
+      else storageSet("intSpySkip", 0);
     } else {
       let intSpySkip = StorageGetInitialize("intSpySkip", 0);
       let spySkip = 0;
@@ -774,7 +822,6 @@ function galaxyStart(direction) {
           currentRowClass.search("filterVacation") < 0
           // && planetIsSend.length < 2
         ) {
-          console.log("intSpySkip", intSpySkip);
           if (intSpySkip <= spySkip) {
             galaxyRows[i].children[6].children[0].dispatchEvent(clickEvent);
             isSpySend = true;
@@ -792,34 +839,39 @@ function galaxyStart(direction) {
         const stopSystemVal = getRndInteger(1, 60);
         if (stopSystemVal > direction.system) {
           direction.galaxy = direction.galaxy - 1;
+          direction.system = getRndInteger(450, 499);
+          //kaldik
 
           if (direction.galaxy < 1) {
             direction.start = false;
-            // clearInterval(galaxySpyInterval);
             gameStatus = "MESSAGE";
             storageSet("gameStatus", gameStatus);
-            MenuClick(0);
+            const header = getIdItem("header");
+            if (header) header.children[2].children[0].click();
+            // MenuClick(0);
           } else {
-            getIdItem("btnSystemLeft").click();
+            getIdItem("btnSystemLeft").dispatchEvent(clickEvent);
+            // getIdItem("btnSystemLeft").click();
             // galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(clickEvent);
           }
         }
       } else if (direction.direction === 0) {
-        console.log("direction.system", direction.system);
         direction.system = direction.system + 1;
-        console.log("direction.system", direction.system);
-        const stopSystemVal = getRndInteger(440, 499);
+        const stopSystemVal = getRndInteger(450, 499);
         if (stopSystemVal < direction.system) {
           direction.galaxy = direction.galaxy + 1;
+          direction.system = getRndInteger(1, 49);
 
           if (direction.galaxy > 4) {
             direction.start = false;
-            // clearInterval(galaxySpyInterval);
+            console.log("gameStatus message");
             gameStatus = "MESSAGE";
             storageSet("gameStatus", gameStatus);
-            MenuClick(0);
+            if (header) header.children[2].children[0].click();
+            // MenuClick(0);
           } else {
-            getIdItem("btnSystemRight").click();
+            getIdItem("btnSystemRight").dispatchEvent(clickEvent);
+            // getIdItem("btnSystemRight").click();
             // galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(clickEvent);
           }
         }
@@ -831,7 +883,6 @@ function galaxyStart(direction) {
         direction: direction.direction,
         start: direction.start,
       });
-      console.log("galaxySpy", storageGet("galaxySpy"));
     }
   } else {
     const left_Menu = getIdItem("left-menu-1");
@@ -841,19 +892,27 @@ function galaxyStart(direction) {
 
 function cargoCapacity() {
   let returnVal = false;
-  if (lightCargoCapacity < 1 || heavyCargoCapacity < 1) {
+  if (
+    parseInt(StorageGetInitialize("lightCargoCapacity", 0)) < 1 ||
+    parseInt(StorageGetInitialize("heavyCargoCapacity", 0)) < 1
+  ) {
     const hangar_container = getIdItem("hangar-container");
     if (hangar_container) {
       const ajax_modal_container = getIdItem("ajax-modal-container");
       if (ajax_modal_container) {
-        setInterval(() => {
+        setTimeout(() => {
           ajax_modal_container.children[0].children[1].click();
         }, 500);
       }
-      if (lightCargoCapacity < 1) {
+
+      if (parseInt(StorageGetInitialize("lightCargoCapacity", 0)) < 1) {
         const ship_info_modal = getIdItem("ship-info-modal");
         const detail_LIGHT_CARGO = getIdItem("detail-LIGHT_CARGO");
-        if (ship_info_modal) {
+        if (
+          ship_info_modal &&
+          ship_info_modal.children[0].children[0].getAttribute("src") ===
+            "../../assets/images/V2/hangar/LIGHT_CARGO.gif"
+        ) {
           const lightCargoCap =
             ship_info_modal.children[1].children[2].children[0].children[1].children[5].children[2].innerText.replaceAll(
               ".",
@@ -865,10 +924,14 @@ function cargoCapacity() {
         } else {
           hangar_container.children[2].children[1].children[3].children[0].click();
         }
-      } else if (heavyCargoCapacity < 1) {
+      } else if (parseInt(StorageGetInitialize("heavyCargoCapacity", 0)) < 1) {
         const ship_info_modal = getIdItem("ship-info-modal");
         const detail_HEAVY_CARGO = getIdItem("detail-HEAVY_CARGO");
-        if (ship_info_modal) {
+        if (
+          ship_info_modal &&
+          ship_info_modal.children[0].children[0].getAttribute("src") ===
+            "../../assets/images/V2/hangar/HEAVY_CARGO.gif"
+        ) {
           const heavyCargoCap =
             ship_info_modal.children[1].children[2].children[0].children[1].children[5].children[2].innerText.replaceAll(
               ".",
@@ -885,7 +948,10 @@ function cargoCapacity() {
       const left_menu = getIdItem("left-menu-1");
       if (left_menu) left_menu.children[5].children[0].click();
     }
-  } else returnVal = true;
+  } else {
+    returnVal = true;
+    // MenuClick(7);
+  }
   return returnVal;
 }
 
@@ -897,6 +963,7 @@ class Helper extends String {
 
 function messageClear() {
   const knownCargoCapacity = cargoCapacity();
+
   if (!knownCargoCapacity) return;
   const messages_container = getIdItem("messages-container");
   if (messages_container) {
@@ -912,9 +979,9 @@ function messageClear() {
 
         //Message Yoksa
         // if (messageRow.length < 3 && gameStatus === "MESSAGE") {
-        if (messageRow.length < 3) {
+        if (messageRow.length < 4) {
           console.log("Message Not Found");
-          gameStatus = "NONE";
+          gameStatus = "GALAXYSPY";
           storageSet("gameStatus", gameStatus);
           const left_menu = getIdItem("left-menu-1");
           if (left_menu) left_menu.children[0].children[0].click();
@@ -963,7 +1030,7 @@ function messageClear() {
                       .innerText
                   )
                 );
-                if (totalResource > 250000000) {
+                if (totalResource > 310000000) {
                   if (!isDelete) {
                     const coordinateText =
                       messageRow[i].children[1].children[0].children[0]
@@ -978,7 +1045,6 @@ function messageClear() {
                       !storageGet("attacked") &&
                       !isArrayEqual(coordinateArr, attackCoordinate)
                     ) {
-                      //kaldik
                       console.log("girdiii");
                       gameStatus = "ATTACK";
                       storageSet("attackCoordinate", coordinateArr);
@@ -1094,7 +1160,7 @@ function enemyAttack() {
           if (btn_next_fleet2) {
             btn_next_fleet2.click();
           }
-        }, 450);
+        }, 100);
         setTimeout(() => {
           const fleet2_target_coords_container = getIdItem(
             "fleet2_target_coords_container"
@@ -1111,7 +1177,7 @@ function enemyAttack() {
               // storageSet("attackCoordinate", [0, 0, 0]);
             }
           }
-        }, 1100);
+        }, 850);
         setTimeout(() => {
           const btn_submit_fleet = getIdItem("btn-submit-fleet");
           if (btn_submit_fleet) {
@@ -1124,16 +1190,51 @@ function enemyAttack() {
             storageSet("attacked", true);
             gameStatus = "MESSAGE";
             storageSet("gameStatus", gameStatus);
+            storageSet("attackCoordinate", [0, 0, 0]);
           }
-        }, 1850);
+        }, 1600);
       } else {
-        // lightCargoCapacity;
-        // heavyCargoCapacity;
-        //  storageSet("attackCoordinate", coordinateArr);
-        gameStatus = "NONE";
-        storageSet("gameStatus", gameStatus);
+        const fleet_movement_detail_btn = getIdItem(
+          "fleet-movement-detail-btn"
+        );
+        const fleet_movement_table = getIdItem("fleet-movement-table");
+        if (fleet_movement_table) {
+          const fleetRow = fleet_movement_table.children[0].children;
+          let fleetReturnCount = 0;
+          for (let i = 0; i < fleetRow.length; i++) {
+            if (
+              fleetRow[i].children[1].children[0].getAttribute("src") ===
+                "/assets/images/V2/mission/ATTACK.png?v=2" &&
+              fleetRow[i].children[4].children[0].children[0].getAttribute(
+                "src"
+              ) === "/assets/images/fleet-movement-icon-reverse.gif?v=2"
+            ) {
+              fleetReturnCount += 1;
+            }
+            if (fleetReturnCount >= getRndInteger(3, 6)) {
+              const currentTimeSpan = mathStabileRound(Date.now() / 1000);
+              gameTimer.message =
+                currentTimeSpan +
+                parseInt(
+                  fleetRow[i].children[0].getAttribute("data-remaining-seconds")
+                ) +
+                5;
+              gameStatus = "NONE";
+              storageSet("gameTimer", gameTimer);
+              storageSet("gameStatus", gameStatus);
+              storageSet("attackCoordinate", [0, 0, 0]);
+              storageSet("attacked", false);
+              storageSet("totalResource", 0);
+              console.log("tikladiii");
+              getIdItem("left-menu-1").children[7].children[0].click();
+              MenuClick(7);
+              break;
+            }
+          }
+        } else if (fleet_movement_detail_btn) {
+          fleet_movement_detail_btn.click();
+        }
       }
-      //kaldik
     } else {
       const left_menu = getIdItem("left-menu-1");
       if (left_menu) {
@@ -1141,6 +1242,16 @@ function enemyAttack() {
         left_menu.children[7].children[0].click();
       }
     }
+  }
+}
+
+function missResources() {
+  const fleet_content = getIdItem("fleet-content");
+  if (fleet_content) {
+    fleet_content.children[0].children[1].children[1].click();
+  } else {
+    const left_menu = getIdItem("left-menu-1");
+    if (left_menu) left_menu.children[7].children[0].click();
   }
 }
 
@@ -1183,33 +1294,53 @@ function discoveryStart() {
           console.log("büyük nakliye sayısı:", storageGet("HEAVY_CARGO"));
           const heavyCargo = parseInt(storageGet("HEAVY_CARGO"));
           if (heavyCargo > 30000)
-            fleetContainer.children[i].children[1].children[0].value = "10000";
+            fleetContainer.children[i].children[1].children[0].value = "20000";
           else
             fleetContainer.children[i].children[1].children[0].value =
               mathStabileRound(heavyCargo / 3);
-
-          break;
+        } else if (
+          fleetContainer.children[i].children[0].getAttribute(
+            "data-ship-type"
+          ) === "REAPER"
+        ) {
+          storageSet(
+            "REAPER",
+            fleetContainer.children[
+              i
+            ].children[0].children[0].innerText.replaceAll(".", "")
+          );
+          const reaper = parseInt(storageGet("REAPER"));
+          if (reaper > 20000)
+            fleetContainer.children[i].children[1].children[0].value = "10000";
+          else
+            fleetContainer.children[i].children[1].children[0].value =
+              mathStabileRound(reaper / 3);
         }
       }
+      setTimeout(() => {
+        const btn_next_fleet2 = getIdItem("btn-next-fleet2");
+        if (btn_next_fleet2) {
+          btn_next_fleet2.click();
+        }
+      }, 100);
 
-      const expeditionHoldTime = getIdItem("expeditionHoldTime");
-      const btn_submit_fleet = getIdItem("btn-submit-fleet");
-      if (btn_submit_fleet) {
-        expeditionHoldTime.value = "360";
-        const fleet2_target_z = getIdItem("fleet2_target_z");
-        fleet2_target_z.value = 16;
-        btn_submit_fleet.click();
-      }
+      setTimeout(() => {
+        const btn_next_fleet3 = getIdItem("btn-next-fleet3");
+        if (btn_next_fleet3) {
+          btn_next_fleet3.click();
+        }
+      }, 850);
 
-      const btn_next_fleet3 = getIdItem("btn-next-fleet3");
-      if (btn_next_fleet3) {
-        btn_next_fleet3.click();
-      }
-
-      const btn_next_fleet2 = getIdItem("btn-next-fleet2");
-      if (btn_next_fleet2) {
-        btn_next_fleet2.click();
-      }
+      setTimeout(() => {
+        const expeditionHoldTime = getIdItem("expeditionHoldTime");
+        const btn_submit_fleet = getIdItem("btn-submit-fleet");
+        if (btn_submit_fleet) {
+          expeditionHoldTime.value = "60";
+          const fleet2_target_z = getIdItem("fleet2_target_z");
+          fleet2_target_z.value = 16;
+          btn_submit_fleet.click();
+        }
+      }, 1650);
     } else {
       //Keşif Kotası Dolu
       console.log("Keşif Kotası Dolu");
@@ -1240,11 +1371,10 @@ function discoveryStart() {
               5;
             storageSet("gameTimer", gameTimer);
             gameStatus = "NONE";
-            gameRoute.discovery = false;
+            gameRoute.discovery = true;
             storageSet("gameRoute", gameRoute);
             storageSet("gameStatus", gameStatus);
-            pageRefresh();
-            console.log("aaa");
+            MenuClick(7);
             return;
           }
         }
@@ -1286,13 +1416,14 @@ function allClearIntervals(val) {
 (() => {
   const currentTimeSpan = mathStabileRound(Date.now() / 1000);
 
+  console.log("currentTimeSpan", currentTimeSpan);
   console.log("gameTimer", gameTimer);
+  console.log("difference", gameTimer.message - currentTimeSpan);
   console.log("gameRoute", gameRoute);
   console.log("gameStatus", gameStatus);
-  // console.log("currentTimeSpan", currentTimeSpan);
 
   if (
-    gameStatus === gameEnum.NONE &&
+    gameStatus === "NONE" &&
     gameRoute.discovery &&
     (gameTimer.discovery === 0 || gameTimer.discovery < currentTimeSpan)
   ) {
@@ -1301,12 +1432,25 @@ function allClearIntervals(val) {
     storageSet("gameStatus", gameStatus);
   } else if (
     false &&
-    gameStatus === gameEnum.NONE &&
+    gameStatus === "NONE" &&
     gameRoute.galaxySpy &&
     (gameTimer.galaxySpy === 0 || gameTimer.galaxySpy < currentTimeSpan)
   ) {
     gameStatus = gameEnum.GALAXYSPY;
     storageSet("gameStatus", gameStatus);
+  } else if (
+    gameStatus === "NONE" &&
+    gameTimer.message < currentTimeSpan &&
+    gameTimer.message !== 0
+  ) {
+    gameStatus = "MESSAGE";
+    gameTimer.message = 0;
+    storageSet("gameStatus", gameStatus);
+    storageSet("gameTimer", gameTimer);
+    setInterval(() => {
+      dataInitialize();
+      messageClear();
+    }, 1100);
   }
 
   if (gameStatus === "DISCOVERY") {
@@ -1332,30 +1476,33 @@ function allClearIntervals(val) {
         // if (swal2_actions) swal2_actions.children[0].click();
         // else
         galaxyStart(storageGet("galaxySpy"));
-      }, 1300);
+      }, getRndInteger(750, 1100));
     }
   } else if (gameStatus === "MESSAGE") {
     allClearIntervals("messageInterval");
     messageInterval = setInterval(() => {
       dataInitialize();
       messageClear();
-    }, 1500);
+    }, 1100);
   } else if (gameStatus === "ATTACK") {
     allClearIntervals("attackInterval");
     console.log("enum ATTACK");
     attackInterval = setInterval(() => {
       dataInitialize();
       enemyAttack();
-    }, 1500);
-  } else if (gameStatus === "NONE") {
-    intervalNone = setTimeout(() => {
-      const left_menu = getIdItem("left-menu-1");
-      if (left_menu) {
-        left_menu.children[0].children[0].click();
-      }
-    }, getRndInteger(500000, 1100000));
+    }, 2000);
+  } else if (gameStatus === "UNDERATTACK") {
   }
-
+  // else if (gameStatus === "NONE") {
+  // }
+  const pageRefreshTime = getRndInteger(300000, 1000000);
+  console.log("pageRefreshTime", pageRefreshTime);
+  intervalNone = setTimeout(() => {
+    const left_menu = getIdItem("left-menu-1");
+    if (left_menu) {
+      left_menu.children[0].children[0].click();
+    }
+  }, pageRefreshTime);
   // switch (gameStatus) {
   //   case "DISCOVERY":
   //     allClearIntervals("intervalDiscovery");
