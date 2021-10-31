@@ -216,7 +216,9 @@ top: 18px;
 btnMessageClear.addEventListener("click", () => {
   gameStatus = "MESSAGE";
   storageSet("gameStatus", gameStatus);
-  pageRefresh();
+  const header = getIdItem("header");
+  if (header) header.children[2].children[0].click();
+  else MenuClick(0);
   // messageClear();
 });
 
@@ -417,7 +419,7 @@ cbDiscovery.addEventListener("click", () => {
   gameStatus = "DISCOVERY";
   storageSet("gameStatus", gameStatus);
   storageSet("gameRoute", gameRoute);
-  pageRefresh();
+  MenuClick(7);
 });
 
 let btnTest = document.createElement("button");
