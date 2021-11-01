@@ -43,6 +43,7 @@ const gameEnum = {
   ATTACK: "ATTACK",
   RESEARCH: "RESEARCH",
   UNDERATTACK: "UNDERATTACK",
+  SLEEP = "SLEEP",
   NONE: "NONE",
 };
 
@@ -84,6 +85,7 @@ class clssGameRoute {
     this.attack = false;
     this.reSearch = false;
     this.underAttack = false;
+    this.sleep = false;
   }
 }
 let gameRoute = StorageGetInitialize("gameRoute", new clssGameRoute());
@@ -738,6 +740,18 @@ function dataInitialize() {
 }
 dataInitialize();
 
+function gameClockInitialize(){
+  const system_clock = getIdItem('system-clock');
+  if(system_clock){
+    const gameTime = system_clock.innerText.substr(11,2);
+     if(gameTime === "00") {
+
+     }
+    console.log("gameTime",typeof gameTime)
+  }
+}
+gameClockInitialize();
+
 let arrPlanetBuildings = [];
 
 function buildingsStart() {
@@ -1267,7 +1281,7 @@ function discoveryStart() {
   const fleetContainer = getIdItem("fleet1_content_container");
   if (fleetContainer) {
     //Keşif Kotasında Yer Var
-    if (currentDiscovery < totalDiscovery) {
+    if (currentDiscovery < totalDiscovery && totalFleet > currentFleet + 1) {
       for (let i = 0; i < fleetContainer.children.length; i++) {
         if (
           fleetContainer.children[i].children[0].getAttribute(
@@ -1432,15 +1446,17 @@ function allClearIntervals(val) {
     console.log("discovery start");
     gameStatus = gameEnum.DISCOVERY;
     storageSet("gameStatus", gameStatus);
-  } else if (
-    false &&
-    gameStatus === "NONE" &&
-    gameRoute.galaxySpy &&
-    (gameTimer.galaxySpy === 0 || gameTimer.galaxySpy < currentTimeSpan)
-  ) {
-    gameStatus = gameEnum.GALAXYSPY;
-    storageSet("gameStatus", gameStatus);
-  } else if (
+  } 
+  // else if (
+  //   false &&
+  //   gameStatus === "NONE" &&
+  //   gameRoute.galaxySpy &&
+  //   (gameTimer.galaxySpy === 0 || gameTimer.galaxySpy < currentTimeSpan)
+  // ) {
+  //   gameStatus = gameEnum.GALAXYSPY;
+  //   storageSet("gameStatus", gameStatus);
+  // }
+   else if (
     gameStatus === "NONE" &&
     gameTimer.message < currentTimeSpan &&
     gameTimer.message !== 0
@@ -1495,15 +1511,15 @@ function allClearIntervals(val) {
     }, 2000);
   } else if (gameStatus === "UNDERATTACK") {
   }
+  else if (gameStatus === "SLEEP") {
+
+  }
   // else if (gameStatus === "NONE") {
   // }
-  const pageRefreshTime = getRndInteger(300000, 1000000);
+  const pageRefreshTime = getRndInteger(300000, 900000);
   console.log("pageRefreshTime", pageRefreshTime);
   intervalNone = setTimeout(() => {
-    const left_menu = getIdItem("left-menu-1");
-    if (left_menu) {
-      left_menu.children[0].children[0].click();
-    }
+    MenuClick(7)
   }, pageRefreshTime);
   // switch (gameStatus) {
   //   case "DISCOVERY":
