@@ -1494,7 +1494,7 @@ function allClearIntervals(val) {
         // if (swal2_actions) swal2_actions.children[0].click();
         // else
         galaxyStart(storageGet("galaxySpy"));
-      }, getRndInteger(750, 1100));
+      }, getRndInteger(650, 900));
     }
   } else if (gameStatus === "MESSAGE") {
     allClearIntervals("messageInterval");
