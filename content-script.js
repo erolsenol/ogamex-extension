@@ -43,7 +43,7 @@ const gameEnum = {
   ATTACK: "ATTACK",
   RESEARCH: "RESEARCH",
   UNDERATTACK: "UNDERATTACK",
-  SLEEP = "SLEEP",
+  // SLEEP = "SLEEP",
   NONE: "NONE",
 };
 
@@ -740,14 +740,13 @@ function dataInitialize() {
 }
 dataInitialize();
 
-function gameClockInitialize(){
-  const system_clock = getIdItem('system-clock');
-  if(system_clock){
-    const gameTime = system_clock.innerText.substr(11,2);
-     if(gameTime === "00") {
-
-     }
-    console.log("gameTime",typeof gameTime)
+function gameClockInitialize() {
+  const system_clock = getIdItem("system-clock");
+  if (system_clock) {
+    const gameTime = system_clock.innerText.substr(11, 2);
+    if (gameTime === "00") {
+    }
+    console.log("gameTime", typeof gameTime);
   }
 }
 gameClockInitialize();
@@ -866,10 +865,16 @@ function galaxyStart(direction) {
             if (header) header.children[2].children[0].click();
             // MenuClick(0);
           } else {
-            getIdItem("btnSystemLeft").dispatchEvent(clickEvent);
+            // getIdItem("btnSystemLeft").dispatchEvent(clickEvent);
             // getIdItem("btnSystemLeft").click();
             // galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(clickEvent);
           }
+        } else {
+          galaxyInput.value = direction.galaxy;
+          systemInput.value = direction.system;
+          galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(
+            clickEvent
+          );
         }
       } else if (direction.direction === 0) {
         direction.system = direction.system + 1;
@@ -886,10 +891,16 @@ function galaxyStart(direction) {
             if (header) header.children[2].children[0].click();
             // MenuClick(0);
           } else {
-            getIdItem("btnSystemRight").dispatchEvent(clickEvent);
+            // getIdItem("btnSystemRight").dispatchEvent(clickEvent);
             // getIdItem("btnSystemRight").click();
             // galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(clickEvent);
           }
+        } else {
+          galaxyInput.value = direction.galaxy;
+          systemInput.value = direction.system;
+          galaxyContainer.children[0].children[0].children[2].children[0].dispatchEvent(
+            clickEvent
+          );
         }
       }
 
@@ -1446,7 +1457,7 @@ function allClearIntervals(val) {
     console.log("discovery start");
     gameStatus = gameEnum.DISCOVERY;
     storageSet("gameStatus", gameStatus);
-  } 
+  }
   // else if (
   //   false &&
   //   gameStatus === "NONE" &&
@@ -1456,7 +1467,7 @@ function allClearIntervals(val) {
   //   gameStatus = gameEnum.GALAXYSPY;
   //   storageSet("gameStatus", gameStatus);
   // }
-   else if (
+  else if (
     gameStatus === "NONE" &&
     gameTimer.message < currentTimeSpan &&
     gameTimer.message !== 0
@@ -1510,16 +1521,14 @@ function allClearIntervals(val) {
       enemyAttack();
     }, 2000);
   } else if (gameStatus === "UNDERATTACK") {
-  }
-  else if (gameStatus === "SLEEP") {
-
+  } else if (gameStatus === "SLEEP") {
   }
   // else if (gameStatus === "NONE") {
   // }
   const pageRefreshTime = getRndInteger(300000, 900000);
   console.log("pageRefreshTime", pageRefreshTime);
   intervalNone = setTimeout(() => {
-    MenuClick(7)
+    MenuClick(7);
   }, pageRefreshTime);
   // switch (gameStatus) {
   //   case "DISCOVERY":
