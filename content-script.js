@@ -200,6 +200,7 @@ btngalaxyStop.addEventListener("click", () => {
     gameStatus = "NONE";
     storageSet("galaxySpy", direction);
     storageSet("gameStatus", gameStatus);
+    storageSet("attacked", false);
 
     const left_menu = getIdItem("left-menu-1");
     if (left_menu) left_menu.children[0].children[0].click();
@@ -582,56 +583,56 @@ let _totalPlanetCount = 0,
   _currentPlanetSysyem = 0;
 function dataInitialize() {
   //Düşman Saldırıyor Mu
-  // const header = getIdItem("header");
-  // if (header) {
-  //   if (
-  //     header.children[3].getAttribute("class").search("hostile") > -1 &&
-  //     header.children[3].children[0].children[2].children[1].innerText ===
-  //       "Saldırı"
-  //   ) {
-  //     const other_planets = getIdItem("other-planets");
-  //     if (other_planets) {
-  //       for (let i = 0; i < other_planets.children.length; i++) {
-  //         if (
-  //           other_planets.children[i]
-  //             .getAttribute("class")
-  //             .search("underAttack") > -1
-  //         ) {
-  //           const myPlanetUnderAttackArr = other_planets.children[
-  //             i
-  //           ].children[0].children[2].innerText
-  //             .replaceAll("[", "")
-  //             .replaceAll("]", "")
-  //             .split(":");
-  //           storageSet("myPlanetUnderAttackArr", myPlanetUnderAttackArr);
-  //           console.log(
-  //             "myPlanetUnderAttackArr",
-  //             storageGet("myPlanetUnderAttackArr")
-  //           );
-  //           break;
-  //         }
-  //       }
-  //     }
+  const header = getIdItem("header");
+  if (header) {
+    if (
+      header.children[3].getAttribute("class").search("hostile") > -1 &&
+      header.children[3].children[0].children[2].children[1].innerText ===
+        "Saldırı"
+    ) {
+      window.alert("Saldırı Altındasınız");
+      // const other_planets = getIdItem("other-planets");
+      // if (other_planets) {
+      //   for (let i = 0; i < other_planets.children.length; i++) {
+      //     if (
+      //       other_planets.children[i]
+      //         .getAttribute("class")
+      //         .search("underAttack") > -1
+      //     ) {
+      //       const myPlanetUnderAttackArr = other_planets.children[
+      //         i
+      //       ].children[0].children[2].innerText
+      //         .replaceAll("[", "")
+      //         .replaceAll("]", "")
+      //         .split(":");
+      //       storageSet("myPlanetUnderAttackArr", myPlanetUnderAttackArr);
+      //       console.log(
+      //         "myPlanetUnderAttackArr",
+      //         storageGet("myPlanetUnderAttackArr")
+      //       );
+      //       break;
+      //     }
+      //   }
+      // }
 
-  //     gameStatusBefore = gameStatus;
-  //     gameStatus = "UNDERATTACK";
+      // gameStatusBefore = gameStatus;
+      // gameStatus = "UNDERATTACK";
 
-  //     storageSet("gameStatusBefore", gameStatusBefore);
-  //     storageSet("gameStatus", gameStatus);
-  //   } else {
-  //     if (storageGet("gameStatusBefore") !== "NONE") {
-  //       gameStatus = storageGet("gameStatusBefore");
-  //       gameStatusBefore = "NONE";
-
-  //       storageSet("gameStatus", gameStatus);
-  //       storageSet("gameStatusBefore", gameStatusBefore);
-  //     } else if (gameStatus === "UNDERATTACK") {
-  //       gameStatus = "NONE";
-  //       storageSet("gameStatus", gameStatus);
-  //     }
-  //     storageSet("myPlanetUnderAttackArr", [0, 0, 0]);
-  //   }
-  // }
+      // storageSet("gameStatusBefore", gameStatusBefore);
+      // storageSet("gameStatus", gameStatus);
+    } else {
+      // if (storageGet("gameStatusBefore") !== "NONE") {
+      //   gameStatus = storageGet("gameStatusBefore");
+      //   gameStatusBefore = "NONE";
+      //   storageSet("gameStatus", gameStatus);
+      //   storageSet("gameStatusBefore", gameStatusBefore);
+      // } else if (gameStatus === "UNDERATTACK") {
+      //   gameStatus = "NONE";
+      //   storageSet("gameStatus", gameStatus);
+      // }
+      // storageSet("myPlanetUnderAttackArr", [0, 0, 0]);
+    }
+  }
   //Madenleri Al
   const metal_amount = getIdItem("metal-amount");
   if (metal_amount) {
@@ -1128,7 +1129,7 @@ function enemyAttack() {
   if (knownCargoCapacity) {
     const fleet_content = getIdItem("fleet-content");
     if (fleet_content) {
-      if (totalFleet > currentFleet + 2) {
+      if (totalFleet > currentFleet + 1) {
         const ships =
           fleet_content.children[1].children[1].children[0].children;
         for (let i = 0; i < ships.length; i++) {
@@ -1525,7 +1526,7 @@ function allClearIntervals(val) {
   }
   // else if (gameStatus === "NONE") {
   // }
-  const pageRefreshTime = getRndInteger(300000, 900000);
+  const pageRefreshTime = getRndInteger(300000, 700000);
   console.log("pageRefreshTime", pageRefreshTime);
   intervalNone = setTimeout(() => {
     MenuClick(7);
