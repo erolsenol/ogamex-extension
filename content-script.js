@@ -590,7 +590,7 @@ function dataInitialize() {
       header.children[3].children[0].children[2].children[1].innerText ===
         "Saldırı"
     ) {
-      window.alert("Saldırı Altındasınız");
+      // window.alert("Saldırı Altındasınız");
       // const other_planets = getIdItem("other-planets");
       // if (other_planets) {
       //   for (let i = 0; i < other_planets.children.length; i++) {
@@ -614,10 +614,8 @@ function dataInitialize() {
       //     }
       //   }
       // }
-
       // gameStatusBefore = gameStatus;
       // gameStatus = "UNDERATTACK";
-
       // storageSet("gameStatusBefore", gameStatusBefore);
       // storageSet("gameStatus", gameStatus);
     } else {
