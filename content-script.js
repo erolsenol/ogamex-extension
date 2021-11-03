@@ -201,6 +201,8 @@ btngalaxyStop.addEventListener("click", () => {
     storageSet("galaxySpy", direction);
     storageSet("gameStatus", gameStatus);
     storageSet("attacked", false);
+    storageSet('enemyFleetPoint',0)
+    storageSet('enemyDefencePoint',0)
 
     const left_menu = getIdItem("left-menu-1");
     if (left_menu) left_menu.children[0].children[0].click();
@@ -1037,6 +1039,8 @@ function messageClear() {
                   .substring(16)
                   .replaceAll(".", "")
               );
+              storageSet('enemyFleetPoint',fleetPoint)
+              storageSet('enemyDefencePoint',defencePoint)
               if (fleetPoint < 1 && defencePoint < 1) {
                 totalResource = parseInt(
                   Helper.resourceTextClear(
@@ -1056,7 +1060,7 @@ function messageClear() {
                       .innerText
                   )
                 );
-                if (totalResource > 500000000) {
+                if (totalResource > 600000000) {
                   if (!isDelete) {
                     const coordinateText =
                       messageRow[i].children[1].children[0].children[0]
@@ -1071,7 +1075,6 @@ function messageClear() {
                       !storageGet("attacked") &&
                       !isArrayEqual(coordinateArr, attackCoordinate)
                     ) {
-                      console.log("girdiii");
                       gameStatus = "ATTACK";
                       storageSet("attackCoordinate", coordinateArr);
                       storageSet("totalResource", totalResource);
@@ -1127,9 +1130,12 @@ function enemyAttack() {
   if (knownCargoCapacity) {
     const fleet_content = getIdItem("fleet-content");
     if (fleet_content) {
-      if (totalFleet > currentFleet + 1) {
+      if (totalFleet > currentFleet + 2) {
         const ships =
           fleet_content.children[1].children[1].children[0].children;
+          const enemyFleetPoint = StorageGetInitialize("enemyFleetPoint",0)
+          const enemyDefencePoint = StorageGetInitialize("enemyDefencePoint",0)
+          //kaldik
         for (let i = 0; i < ships.length; i++) {
           if (
             ships[i].children[0].getAttribute("data-ship-type") ===
@@ -1319,8 +1325,8 @@ function discoveryStart() {
           );
           console.log("büyük nakliye sayısı:", storageGet("HEAVY_CARGO"));
           const heavyCargo = parseInt(storageGet("HEAVY_CARGO"));
-          if (heavyCargo > 30000)
-            fleetContainer.children[i].children[1].children[0].value = "20000";
+          if (heavyCargo > 90000)
+            fleetContainer.children[i].children[1].children[0].value = "50000";
           else
             fleetContainer.children[i].children[1].children[0].value =
               mathStabileRound(heavyCargo / 3);
@@ -1504,7 +1510,7 @@ function allClearIntervals(val) {
         // if (swal2_actions) swal2_actions.children[0].click();
         // else
         galaxyStart(storageGet("galaxySpy"));
-      }, getRndInteger(650, 900));
+      }, getRndInteger(620, 850));
     }
   } else if (gameStatus === "MESSAGE") {
     allClearIntervals("messageInterval");
