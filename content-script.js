@@ -215,6 +215,7 @@ btngalaxyStop.addEventListener('click', () => {
     storageSet('attacked', false);
     storageSet('enemyFleetPoint', 0);
     storageSet('enemyDefencePoint', 0);
+    
 
     const left_menu = getIdItem('left-menu-1');
     if (left_menu) left_menu.children[0].children[0].click();
@@ -1078,8 +1079,7 @@ function messageClear() {
                   .substring(16)
                   .replaceAll('.', ''),
               );
-              storageSet('enemyFleetPoint', fleetPoint);
-              storageSet('enemyDefencePoint', defencePoint);
+               // if (fleetPoint + defencePoint < 5000000) {
               if (fleetPoint < 1 && defencePoint < 1) {
                 totalResource = parseInt(
                   Helper.resourceTextClear(
@@ -1099,7 +1099,7 @@ function messageClear() {
                       .children[0].innerText,
                   ),
                 );
-                if (totalResource > 500000000) {
+                if (totalResource > 470000000) {
                   if (!isDelete) {
                     const coordinateText =
                       messageRow[i].children[1].children[0]
@@ -1118,6 +1118,9 @@ function messageClear() {
                       storageSet('attackCoordinate', coordinateArr);
                       storageSet('totalResource', totalResource);
                       storageSet('gameStatus', gameStatus);
+
+                      storageSet('enemyFleetPoint', fleetPoint);
+                      storageSet('enemyDefencePoint', defencePoint);
 
                       messageRow[i].children[3].children[5].click();
                       break;
@@ -1180,14 +1183,6 @@ function enemyAttack() {
       if (totalFleet > currentFleet + 2) {
         const ships =
           fleet_content.children[1].children[1].children[0].children;
-        const enemyFleetPoint = StorageGetInitialize(
-          'enemyFleetPoint',
-          0,
-        );
-        const enemyDefencePoint = StorageGetInitialize(
-          'enemyDefencePoint',
-          0,
-        );
         //kaldik
         for (let i = 0; i < ships.length; i++) {
           if (
@@ -1245,7 +1240,39 @@ function enemyAttack() {
                 '',
               ),
             );
-          }
+          } 
+          // else if (ships[i].children[0].getAttribute('data-ship-type') ===
+          // 'BATTLE_CRUISER') {
+          //   storageSet(
+          //     'BATTLE_CRUISER',
+          //     ships[i].children[0].children[0].innerText.replaceAll(
+          //       '.',
+          //       '',
+          //     ),
+          //   );
+          //   const totalDefence = parseInt(storageGet('enemyFleetPoint')) + 
+          //   parseInt(storageGet('enemyDefencePoint'));
+          //   if(totalDefence > 0) {
+          //     const cruiserRequired = mathStabileRound(totalDefence/34+getRndInteger(50, 250))
+          //   if (
+          //     cruiserRequired <=
+          //     parseInt(storageGet('BATTLE_CRUISER'))
+          //   ) {
+          //     ships[i].children[1].children[0].value =
+          //     cruiserRequired;
+          //   } else {
+          //     storageSet('attacked', true);
+          //     gameStatus = 'MESSAGE';
+          //     storageSet('gameStatus', gameStatus);
+          //     storageSet('attackCoordinate', [0, 0, 0]);
+          //     storageSet('enemyFleetPoint', 0)
+          //     storageSet('enemyDefencePoint', 0)
+
+          //     const header = getIdItem('header')
+          //     if(header)header.children[2].children[0].click();
+          //   }
+          //   }
+          // }
         }
 
         // if (storageGet("attacked")) {
@@ -1258,7 +1285,7 @@ function enemyAttack() {
           if (btn_next_fleet2) {
             btn_next_fleet2.click();
           }
-        }, 100);
+        }, 150);
         setTimeout(() => {
           const fleet2_target_coords_container = getIdItem(
             'fleet2_target_coords_container',
@@ -1292,6 +1319,8 @@ function enemyAttack() {
             gameStatus = 'MESSAGE';
             storageSet('gameStatus', gameStatus);
             storageSet('attackCoordinate', [0, 0, 0]);
+            storageSet('enemyFleetPoint', 0)
+            storageSet('enemyDefencePoint', 0)
           }
         }, 1600);
       } else {
