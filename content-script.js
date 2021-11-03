@@ -1629,7 +1629,7 @@ function allClearIntervals(val) {
   }
   // else if (gameStatus === "NONE") {
   // }
-  const pageRefreshTime = getRndInteger(300000, 700000);
+  const pageRefreshTime = getRndInteger(300000, 600000);
   console.log('pageRefreshTime', pageRefreshTime);
   intervalNone = setTimeout(() => {
     MenuClick(7);
