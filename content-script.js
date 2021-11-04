@@ -189,7 +189,7 @@ top: 15px;
 `,
 );
 btngalaxyRight.addEventListener('click', () => {
-  galaxyRouteInitialize();
+  if (!storageGet('galaxySpy')) galaxyRouteInitialize();
   console.log('gameStatus GALAYSPY Set');
   gameStatus = 'GALAXYSPY';
   storageSet('gameStatus', gameStatus);
@@ -215,7 +215,6 @@ btngalaxyStop.addEventListener('click', () => {
     storageSet('attacked', false);
     storageSet('enemyFleetPoint', 0);
     storageSet('enemyDefencePoint', 0);
-    
 
     const left_menu = getIdItem('left-menu-1');
     if (left_menu) left_menu.children[0].children[0].click();
@@ -884,12 +883,12 @@ function galaxyStart(direction) {
         if (stopSystemVal > direction.system) {
           direction.galaxy = direction.galaxy - 1;
           direction.system = getRndInteger(450, 499);
-          //kaldik
 
           if (direction.galaxy < 1) {
             direction.start = false;
             gameStatus = 'MESSAGE';
             storageSet('gameStatus', gameStatus);
+            galaxyRouteInitialize();
             const header = getIdItem('header');
             if (header) header.children[2].children[0].click();
             // MenuClick(0);
@@ -917,6 +916,8 @@ function galaxyStart(direction) {
             console.log('gameStatus message');
             gameStatus = 'MESSAGE';
             storageSet('gameStatus', gameStatus);
+            galaxyRouteInitialize;
+            const header = getIdItem('header');
             if (header) header.children[2].children[0].click();
             // MenuClick(0);
           } else {
@@ -1079,7 +1080,7 @@ function messageClear() {
                   .substring(16)
                   .replaceAll('.', ''),
               );
-               // if (fleetPoint + defencePoint < 5000000) {
+              // if (fleetPoint + defencePoint < 5000000) {
               if (fleetPoint < 1 && defencePoint < 1) {
                 totalResource = parseInt(
                   Helper.resourceTextClear(
@@ -1099,7 +1100,7 @@ function messageClear() {
                       .children[0].innerText,
                   ),
                 );
-                if (totalResource > 470000000) {
+                if (totalResource > 550000000) {
                   if (!isDelete) {
                     const coordinateText =
                       messageRow[i].children[1].children[0]
@@ -1240,7 +1241,7 @@ function enemyAttack() {
                 '',
               ),
             );
-          } 
+          }
           // else if (ships[i].children[0].getAttribute('data-ship-type') ===
           // 'BATTLE_CRUISER') {
           //   storageSet(
@@ -1250,7 +1251,7 @@ function enemyAttack() {
           //       '',
           //     ),
           //   );
-          //   const totalDefence = parseInt(storageGet('enemyFleetPoint')) + 
+          //   const totalDefence = parseInt(storageGet('enemyFleetPoint')) +
           //   parseInt(storageGet('enemyDefencePoint'));
           //   if(totalDefence > 0) {
           //     const cruiserRequired = mathStabileRound(totalDefence/34+getRndInteger(50, 250))
@@ -1319,8 +1320,8 @@ function enemyAttack() {
             gameStatus = 'MESSAGE';
             storageSet('gameStatus', gameStatus);
             storageSet('attackCoordinate', [0, 0, 0]);
-            storageSet('enemyFleetPoint', 0)
-            storageSet('enemyDefencePoint', 0)
+            storageSet('enemyFleetPoint', 0);
+            storageSet('enemyDefencePoint', 0);
           }
         }, 1600);
       } else {
@@ -1628,7 +1629,7 @@ function allClearIntervals(val) {
   } else if (gameStatus === 'GALAXYSPY') {
     allClearIntervals('galaxySpyInterval');
     const galaxySpyStatus = storageGet('galaxySpy');
-    if (!galaxySpyStatus.start) galaxyRouteInitialize();
+    if (!storageGet('galaxySpy')) galaxyRouteInitialize();
     // gameStatus = "GALAXYSPY";
     // storageSet("gameStatus", gameStatus);
     if (gameRoute.galaxySpy || true) {
