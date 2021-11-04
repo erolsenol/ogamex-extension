@@ -916,7 +916,7 @@ function galaxyStart(direction) {
             console.log('gameStatus message');
             gameStatus = 'MESSAGE';
             storageSet('gameStatus', gameStatus);
-            galaxyRouteInitialize;
+            galaxyRouteInitialize();
             const header = getIdItem('header');
             if (header) header.children[2].children[0].click();
             // MenuClick(0);
