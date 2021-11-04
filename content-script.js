@@ -1348,7 +1348,7 @@ function enemyAttack() {
             ) {
               fleetReturnCount += 1;
             }
-            if (fleetReturnCount >= getRndInteger(3, 6)) {
+            if (fleetReturnCount >= getRndInteger(3, 5)) {
               const currentTimeSpan = mathStabileRound(
                 Date.now() / 1000,
               );
