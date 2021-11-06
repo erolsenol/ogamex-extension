@@ -945,6 +945,7 @@ function galaxyStart(direction) {
   }
 }
 
+
 function cargoCapacity() {
   let returnVal = false;
   if (
@@ -1060,8 +1061,15 @@ function messageClear() {
             const messageContentTable =
               messageRow[i].children[2].children[0].children[0]
                 .children[0];
-            //Filo veya Savunma Rapor Detayında Varmı
 
+                //Zayıf mı
+                if(messageContentTable.children[0].children[0].children[0].children[0].getAttribute('class').indexOf('isNoob') > -1) {
+                  messageRow[
+                    i
+                  ].children[1].children[1].children[1].click();
+                  isDelete = true;
+                } else {
+                  //Filo veya Savunma Rapor Detayında Varmı
             if (
               messageContentTable.children[1].children[1].children[0]
                 .childElementCount > 0 &&
@@ -1099,7 +1107,7 @@ function messageClear() {
                       .children[0].innerText,
                   ),
                 );
-                if (totalResource > 500000000) {
+                if (totalResource > 600000000) {
                   if (!isDelete) {
                     const coordinateText =
                       messageRow[i].children[1].children[0]
@@ -1151,6 +1159,7 @@ function messageClear() {
               isDelete = true;
               // break;
             }
+                }
           } else {
             messageRow[i].children[1].children[1].children[1].click();
             isDelete = true;
@@ -1318,7 +1327,7 @@ function enemyAttack() {
             ) {
               fleetReturnCount += 1;
             }
-            if (fleetReturnCount >= getRndInteger(3, 6)) {
+            if (fleetReturnCount >= getRndInteger(2, 3)) {
               const currentTimeSpan = mathStabileRound(
                 Date.now() / 1000,
               );
@@ -1609,7 +1618,7 @@ function allClearIntervals(val) {
         // if (swal2_actions) swal2_actions.children[0].click();
         // else
         galaxyStart(storageGet('galaxySpy'));
-      }, getRndInteger(620, 850));
+      }, getRndInteger(450, 600));
     }
   } else if (gameStatus === 'MESSAGE') {
     allClearIntervals('messageInterval');
@@ -1629,7 +1638,7 @@ function allClearIntervals(val) {
   }
   // else if (gameStatus === "NONE") {
   // }
-  const pageRefreshTime = getRndInteger(300000, 600000);
+  const pageRefreshTime = getRndInteger(170000, 350000);
   console.log('pageRefreshTime', pageRefreshTime);
   intervalNone = setTimeout(() => {
     MenuClick(7);
