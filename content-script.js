@@ -233,6 +233,7 @@ top: 18px;
 btnMessageClear.addEventListener('click', () => {
   gameStatus = 'MESSAGE';
   storageSet('gameStatus', gameStatus);
+  storageSet('attacked', false);
   const header = getIdItem('header');
   if (header) header.children[2].children[0].click();
   else MenuClick(0);
@@ -610,35 +611,32 @@ function dataInitialize() {
   const header = getIdItem('header');
   if (header) {
     if (
-      header.children[3].getAttribute('class').search('hostile') >
-        -1 &&
-      header.children[3].children[0].children[2].children[1]
-        .innerText === 'Saldırı'
+      header.children[3].getAttribute('class').search('hostile') > -1
     ) {
-      // window.alert("Saldırı Altındasınız");
-      // const other_planets = getIdItem("other-planets");
-      // if (other_planets) {
-      //   for (let i = 0; i < other_planets.children.length; i++) {
-      //     if (
-      //       other_planets.children[i]
-      //         .getAttribute("class")
-      //         .search("underAttack") > -1
-      //     ) {
-      //       const myPlanetUnderAttackArr = other_planets.children[
-      //         i
-      //       ].children[0].children[2].innerText
-      //         .replaceAll("[", "")
-      //         .replaceAll("]", "")
-      //         .split(":");
-      //       storageSet("myPlanetUnderAttackArr", myPlanetUnderAttackArr);
-      //       console.log(
-      //         "myPlanetUnderAttackArr",
-      //         storageGet("myPlanetUnderAttackArr")
-      //       );
-      //       break;
-      //     }
-      //   }
-      // }
+      const other_planets = getIdItem("other-planets");
+      if (other_planets) {
+        for (let i = 0; i < other_planets.children.length; i++) {
+          if (
+            other_planets.children[i]
+              .getAttribute("class")
+              .search("underAttack") > -1
+          ) {
+            const myPlanetUnderAttackArr = other_planets.children[
+              i
+            ].children[0].children[2].innerText
+              .replaceAll("[", "")
+              .replaceAll("]", "")
+              .split(":");
+            storageSet("myPlanetUnderAttackArr", myPlanetUnderAttackArr);
+            console.log(
+              "myPlanetUnderAttackArr",
+              storageGet("myPlanetUnderAttackArr")
+            );
+            break;
+          }
+        }
+      }
+      storageSet('attacked', false);
       // gameStatusBefore = gameStatus;
       // gameStatus = "UNDERATTACK";
       // storageSet("gameStatusBefore", gameStatusBefore);
@@ -945,7 +943,6 @@ function galaxyStart(direction) {
   }
 }
 
-
 function cargoCapacity() {
   let returnVal = false;
   if (
@@ -1026,6 +1023,40 @@ class Helper extends String {
   }
 }
 
+function asteroidMining() {
+  const galaxy_container = getIdItem('galaxy-container');
+  if (galaxy_container) {
+    const galaxyContent = getIdItem('galaxyContent');
+    if (galaxyContent) {
+      const galaxyTable = galaxyContent.children[0];
+      if (
+        galaxyTable.children.length > 16 &&
+        StorageGetInitialize('asteroidSend', false)
+      ) {
+        storageSet('asteroidSend', true);
+      } else {
+        const system = getIdItem('systemInput').value;
+        if (parseInt(system) < 2) {
+          system.value = 499;
+          const galaxyBtnGo = getSearchInItem(
+            galaxy_container,
+            'a',
+            'class',
+            'btn-route x-btn-go',
+          );
+          if (galaxyBtnGo) galaxyBtnGo.click();
+        }
+      }
+      // for(let i = 1; i < galaxyTable.children.length; i++) {
+      //   if()
+      //   galaxyTable.children[i]
+      // }
+    }
+  } else {
+    MenuClick(8);
+  }
+}
+
 function messageClear() {
   const knownCargoCapacity = cargoCapacity();
 
@@ -1062,81 +1093,91 @@ function messageClear() {
               messageRow[i].children[2].children[0].children[0]
                 .children[0];
 
-                //Zayıf mı
-                if(messageContentTable.children[0].children[0].children[0].children[0].getAttribute('class').indexOf('isNoob') > -1) {
-                  messageRow[
-                    i
-                  ].children[1].children[1].children[1].click();
-                  isDelete = true;
-                } else {
-                  //Filo veya Savunma Rapor Detayında Varmı
+            //Zayıf mı
             if (
-              messageContentTable.children[1].children[1].children[0]
-                .childElementCount > 0 &&
-              messageContentTable.children[2].children[1].children[0]
-                .childElementCount > 0
+              messageContentTable.children[0].children[0].children[0].children[0]
+                .getAttribute('class')
+                .indexOf('isNoob') > -1
             ) {
-              const fleetPoint = parseInt(
-                messageContentTable.children[1].children[1].children[0].children[0].innerText
-                  .substring(6)
-                  .replaceAll('.', ''),
-              );
-              const defencePoint = parseInt(
-                messageContentTable.children[2].children[1].children[0].children[0].innerText
-                  .substring(16)
-                  .replaceAll('.', ''),
-              );
-              storageSet('enemyFleetPoint', fleetPoint);
-              storageSet('enemyDefencePoint', defencePoint);
-              if (fleetPoint < 1 && defencePoint < 1) {
-                totalResource = parseInt(
-                  Helper.resourceTextClear(
-                    messageContentTable.children[1].children[0]
-                      .children[0].innerText,
-                  ),
+              messageRow[
+                i
+              ].children[1].children[1].children[1].click();
+              isDelete = true;
+            } else {
+              //Filo veya Savunma Rapor Detayında Varmı
+              if (
+                messageContentTable.children[1].children[1]
+                  .children[0].childElementCount > 0 &&
+                messageContentTable.children[2].children[1]
+                  .children[0].childElementCount > 0
+              ) {
+                const fleetPoint = parseInt(
+                  messageContentTable.children[1].children[1].children[0].children[0].innerText
+                    .substring(6)
+                    .replaceAll('.', ''),
                 );
-                totalResource += parseInt(
-                  Helper.resourceTextClear(
-                    messageContentTable.children[2].children[0]
-                      .children[0].innerText,
-                  ),
+                const defencePoint = parseInt(
+                  messageContentTable.children[2].children[1].children[0].children[0].innerText
+                    .substring(16)
+                    .replaceAll('.', ''),
                 );
-                totalResource += parseInt(
-                  Helper.resourceTextClear(
-                    messageContentTable.children[3].children[0]
-                      .children[0].innerText,
-                  ),
-                );
-                if (totalResource > 600000000) {
-                  if (!isDelete) {
-                    const coordinateText =
-                      messageRow[i].children[1].children[0]
-                        .children[0].children[0].innerText;
+                storageSet('enemyFleetPoint', fleetPoint);
+                storageSet('enemyDefencePoint', defencePoint);
+                if (fleetPoint < 1 && defencePoint < 1) {
+                  totalResource = parseInt(
+                    Helper.resourceTextClear(
+                      messageContentTable.children[1].children[0]
+                        .children[0].innerText,
+                    ),
+                  );
+                  totalResource += parseInt(
+                    Helper.resourceTextClear(
+                      messageContentTable.children[2].children[0]
+                        .children[0].innerText,
+                    ),
+                  );
+                  totalResource += parseInt(
+                    Helper.resourceTextClear(
+                      messageContentTable.children[3].children[0]
+                        .children[0].innerText,
+                    ),
+                  );
+                  if (totalResource > 600000000) {
+                    if (!isDelete) {
+                      const coordinateText =
+                        messageRow[i].children[1].children[0]
+                          .children[0].children[0].innerText;
 
-                    const coordinateArr = coordinateText
-                      .substring(coordinateText.indexOf('[') + 1)
-                      .replaceAll(']', '')
-                      .split(':');
+                      const coordinateArr = coordinateText
+                        .substring(coordinateText.indexOf('[') + 1)
+                        .replaceAll(']', '')
+                        .split(':');
 
-                    if (
-                      !storageGet('attacked') &&
-                      !isArrayEqual(coordinateArr, attackCoordinate)
-                    ) {
-                      gameStatus = 'ATTACK';
-                      storageSet('attackCoordinate', coordinateArr);
-                      storageSet('totalResource', totalResource);
-                      storageSet('gameStatus', gameStatus);
+                      if (
+                        !storageGet('attacked') &&
+                        !isArrayEqual(coordinateArr, attackCoordinate)
+                      ) {
+                        gameStatus = 'ATTACK';
+                        storageSet('attackCoordinate', coordinateArr);
+                        storageSet('totalResource', totalResource);
+                        storageSet('gameStatus', gameStatus);
 
-                      messageRow[i].children[3].children[5].click();
-                      break;
-                    } else {
-                      storageSet('attacked', false);
-                      console.log('Bir Önceki Saldırılan Siliniyor');
-                      messageRow[
-                        i
-                      ].children[1].children[1].children[1].click();
-                      isDelete = true;
+                        messageRow[i].children[3].children[5].click();
+                        break;
+                      } else {
+                        storageSet('attacked', false);
+                        messageRow[
+                          i
+                        ].children[1].children[1].children[1].click();
+                        isDelete = true;
+                      }
                     }
+                  } else {
+                    messageRow[
+                      i
+                    ].children[1].children[1].children[1].click();
+                    isDelete = true;
+                    // break;
                   }
                 } else {
                   messageRow[
@@ -1152,14 +1193,7 @@ function messageClear() {
                 isDelete = true;
                 // break;
               }
-            } else {
-              messageRow[
-                i
-              ].children[1].children[1].children[1].click();
-              isDelete = true;
-              // break;
             }
-                }
           } else {
             messageRow[i].children[1].children[1].children[1].click();
             isDelete = true;
@@ -1216,7 +1250,7 @@ function enemyAttack() {
 
             const lightCargoRequired = mathStabileRound(
               totalResource / 2 / lightCargoCapacity +
-                getRndInteger(250, 1000),
+                getRndInteger(1000, 2000),
             );
 
             if (
@@ -1624,14 +1658,36 @@ function allClearIntervals(val) {
     allClearIntervals('messageInterval');
     messageInterval = setInterval(() => {
       dataInitialize();
-      messageClear();
+      const other_planets = getIdItem('other-planets');
+      if (other_planets) {
+        if (
+          other_planets.children[0]
+            .getAttribute('class')
+            .indexOf('selected') > -1
+        ) {
+          messageClear();
+        } else {
+          other_planets.children[0].children[0].click();
+        }
+      }
     }, 1000);
   } else if (gameStatus === 'ATTACK') {
     allClearIntervals('attackInterval');
     console.log('enum ATTACK');
     attackInterval = setInterval(() => {
       dataInitialize();
-      enemyAttack();
+      const other_planets = getIdItem('other-planets');
+      if (other_planets) {
+        if (
+          other_planets.children[0]
+            .getAttribute('class')
+            .indexOf('selected') > -1
+        ) {
+          enemyAttack();
+        } else {
+          other_planets.children[0].children[0].click();
+        }
+      }
     }, 2000);
   } else if (gameStatus === 'UNDERATTACK') {
   } else if (gameStatus === 'SLEEP') {
@@ -1643,53 +1699,6 @@ function allClearIntervals(val) {
   intervalNone = setTimeout(() => {
     MenuClick(7);
   }, pageRefreshTime);
-  // switch (gameStatus) {
-  //   case "DISCOVERY":
-  //     allClearIntervals("intervalDiscovery");
-  //     if (_currentPlanet !== 0) {
-  //       const other_planets = getIdItem("other-planets");
-  //       if (other_planets) other_planets.children[0].children[0];
-  //     } else if (gameRoute.discovery)
-  //       intervalDiscovery = setInterval(() => {
-  //         dataInitialize();
-  //         discoveryStart();
-  //       }, 2000);
-  //   case "GALAXYSPY":
-  //     allClearIntervals("galaxySpyInterval");
-  //     const galaxySpyStatus = storageGet("galaxySpy");
-  //     if (!galaxySpyStatus.start) galaxyRouteInitialize();
-  //     // gameStatus = "GALAXYSPY";
-  //     // storageSet("gameStatus", gameStatus);
-  //     if (gameRoute.galaxySpy || true) {
-  //       galaxySpyInterval = setInterval(() => {
-  //         dataInitialize();
-  //         // const swal2_actions = getDOMItem("div", "class", "swal2-actions");
-  //         // if (swal2_actions) swal2_actions.children[0].click();
-  //         // else
-  //         galaxyStart(storageGet("galaxySpy"));
-  //       }, 1500);
-  //     }
-  //   case "MESSAGE":
-  //     allClearIntervals("messageInterval");
-  //     messageInterval = setInterval(() => {
-  //       dataInitialize();
-  //       messageClear();
-  //     }, 1500);
-  //   case "ATTACK":
-  //     allClearIntervals("attackInterval");
-  //     console.log("enum ATTACK");
-  //     attackInterval = setInterval(() => {
-  //       dataInitialize();
-  //       enemyAttack();
-  //     }, 1500);
-  //   case "NONE":
-  //     intervalNone = setTimeout(() => {
-  //       const left_menu = getIdItem("left-menu-1");
-  //       if (left_menu) {
-  //         left_menu.children[0].children[0].click();
-  //       }
-  //     }, getRndInteger(500000, 1100000));
-  // }
 })();
 
 () => {
