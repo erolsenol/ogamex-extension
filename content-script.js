@@ -56,6 +56,7 @@ class clssGameTimer {
     this.attack = 0;
     this.reSearch = 0;
     this.underAttack = 0;
+    this.shipProduced;
   }
 }
 
@@ -462,7 +463,7 @@ top: 23px;
 `,
 );
 btnTest.addEventListener('click', () => {
-  enemyAttack();
+  liftShips();
 });
 
 // let myDiv = document.createElement("div");
@@ -613,24 +614,27 @@ function dataInitialize() {
     if (
       header.children[3].getAttribute('class').search('hostile') > -1
     ) {
-      const other_planets = getIdItem("other-planets");
+      const other_planets = getIdItem('other-planets');
       if (other_planets) {
         for (let i = 0; i < other_planets.children.length; i++) {
           if (
             other_planets.children[i]
-              .getAttribute("class")
-              .search("underAttack") > -1
+              .getAttribute('class')
+              .search('underAttack') > -1
           ) {
             const myPlanetUnderAttackArr = other_planets.children[
               i
             ].children[0].children[2].innerText
-              .replaceAll("[", "")
-              .replaceAll("]", "")
-              .split(":");
-            storageSet("myPlanetUnderAttackArr", myPlanetUnderAttackArr);
+              .replaceAll('[', '')
+              .replaceAll(']', '')
+              .split(':');
+            storageSet(
+              'myPlanetUnderAttackArr',
+              myPlanetUnderAttackArr,
+            );
             console.log(
-              "myPlanetUnderAttackArr",
-              storageGet("myPlanetUnderAttackArr")
+              'myPlanetUnderAttackArr',
+              storageGet('myPlanetUnderAttackArr'),
             );
             break;
           }
@@ -664,11 +668,16 @@ function dataInitialize() {
     _resources_deuterium = getIdItem(
       'deuterium-amount',
     ).innerText.replaceAll('.', '');
-    _resources_energy = getDOMItems(
-      'span',
-      'class',
-      'resource-amount',
-    )[3].innerText.replaceAll('.', '');
+
+    storageSet('resourcesMetal', _resources_metal);
+    storageSet('resourcesCrystal', _resources_crystal);
+    storageSet('resourcesDeuterium', _resources_deuterium);
+
+    // _resources_energy = getDOMItems(
+    //   'span',
+    //   'class',
+    //   'resource-amount',
+    // )[3].innerText.replaceAll('.', '');
 
     // _resources_metal = _resources_metal.replaceAll('.','')
     // _resources_crystal = _resources_crystal.replaceAll('.','')
@@ -814,6 +823,106 @@ let clickEvent = new MouseEvent('click', {
   cancelable: false,
 });
 
+function liftShips() {
+  const knownCargoCapacity = cargoCapacity();
+  if (knownCargoCapacity) {
+    if (StorageGetInitialize('requiredHeavyCargo', 0) < 1) {
+      const fleet_content = getIdItem('fleet-content');
+      if (fleet_content) {
+        const fleets =
+          fleet_content.children[1].children[1].children[0];
+        for (let i = 0; i < fleets.children.length; i++) {
+          if (
+            fleets.children[i].children[0].getAttribute(
+              'data-ship-type',
+            ) === 'LIGHT_CARGO'
+          ) {
+            const LIGHT_CARGO = fleets.children[
+              i
+            ].children[0].children[0].innerText.replaceAll('.', '');
+            storageSet('lift_light_cargo_count', LIGHT_CARGO);
+          } else if (
+            fleets.children[i].children[0].getAttribute(
+              'data-ship-type',
+            ) === 'HEAVY_CARGO'
+          ) {
+            const HEAVY_CARGO = fleets.children[
+              i
+            ].children[0].children[0].innerText.replaceAll('.', '');
+            storageSet('lift_heavy_cargo_count', HEAVY_CARGO);
+          }
+        }
+
+        const lightCargoCapacity = parseInt(
+          storageGet('lightCargoCapacity'),
+        );
+        const heavyCargoCapacity = parseInt(
+          storageGet('heavyCargoCapacity'),
+        );
+
+        const totalResource =
+          parseInt(storageGet('resourcesMetal')) +
+          parseInt(storageGet('resourcesCrystal')) +
+          parseInt(storageGet('resourcesDeuterium'));
+
+        const availableResource =
+          parseInt(storageGet('lift_light_cargo_count')) *
+            lightCargoCapacity +
+          parseInt(storageGet('lift_heavy_cargo_count')) *
+            heavyCargoCapacity;
+
+        if (totalResource > availableResource) {
+          const requiredHeavyCargo =
+            (totalResource - availableResource) / heavyCargoCapacity +
+            getRndInteger(500, 1000);
+          storageSet('requiredHeavyCargo', requiredHeavyCargo);
+          console.log('requiredHeavyCargo', requiredHeavyCargo);
+        }
+
+        console.log('totalResource', totalResource);
+        console.log('availableResource', availableResource);
+      } else {
+        MenuClick(7);
+      }
+    } else {
+      const hangar_container = getIdItem('hangar-container');
+      if (hangar_container) {
+        const hangarFleets = hangar_container.children[2].children[1];
+        for (let i = 0; i < hangarFleets.children.length; i++) {
+          if (
+            hangarFleets.children[i].children[0].getAttribute(
+              'data-ship-type',
+            ) === 'HEAVY_CARGO'
+          ) {
+            hangarFleets.children[i].children[0].click();
+            const detail_HEAVY_CARGO = getIdItem(
+              'detail-HEAVY_CARGO',
+            );
+            if (detail_HEAVY_CARGO) {
+              setTimeout(() => {
+                detail_HEAVY_CARGO.children[1].children[2].children[3].children[3].children[0].children[2].value =
+                  parseInt(storageGet('requiredHeavyCargo')) +
+                  getRndInteger(500, 1000);
+              }, 500);
+              setTimeout(() => {
+                detail_HEAVY_CARGO.children[1].children[2].children[3].children[3].children[1].click();
+                const currentTimeSpan = mathStabileRound(
+                  Date.now() / 1000,
+                );
+                gameTimer.shipProduced = currentTimeSpan + 1000 * 180;
+                storageSet('gameTimer',gameTimer)
+                //kaldik
+              }, 1150);
+            }
+          }
+        }
+      } else {
+        MenuClick(5);
+      }
+    }
+  }
+}
+
 function galaxyStart(direction) {
   if (!direction.start) return;
   const galaxyContainer = getIdItem('galaxy-container');
@@ -877,13 +986,12 @@ function galaxyStart(direction) {
       storageSet('intSpySkip', 0);
       if (direction.direction === 1) {
         direction.system = direction.system - 1;
-        const stopSystemVal = getRndInteger(1, 60);
+        const stopSystemVal = getRndInteger(1, 30);
         if (stopSystemVal > direction.system) {
           direction.galaxy = direction.galaxy - 1;
           direction.system = getRndInteger(450, 499);
-          //kaldik
 
-          if (direction.galaxy < 1) {
+          if (direction.galaxy <= 3 && stopSystemVal > direction.system) {
             direction.start = false;
             gameStatus = 'MESSAGE';
             storageSet('gameStatus', gameStatus);
@@ -904,12 +1012,12 @@ function galaxyStart(direction) {
         }
       } else if (direction.direction === 0) {
         direction.system = direction.system + 1;
-        const stopSystemVal = getRndInteger(450, 499);
+        const stopSystemVal = getRndInteger(470, 499);
         if (stopSystemVal < direction.system) {
           direction.galaxy = direction.galaxy + 1;
           direction.system = getRndInteger(1, 49);
 
-          if (direction.galaxy > 4) {
+          if (direction.galaxy >= 3 && direction.system > stopSystemVal) {
             direction.start = false;
             console.log('gameStatus message');
             gameStatus = 'MESSAGE';
@@ -1231,7 +1339,6 @@ function enemyAttack() {
           'enemyDefencePoint',
           0,
         );
-        //kaldik
         for (let i = 0; i < ships.length; i++) {
           if (
             ships[i].children[0].getAttribute('data-ship-type') ===
@@ -1249,7 +1356,7 @@ function enemyAttack() {
             );
 
             const lightCargoRequired = mathStabileRound(
-              totalResource / 2 / lightCargoCapacity +
+              totalResource / lightCargoCapacity +
                 getRndInteger(1000, 2000),
             );
 
@@ -1694,7 +1801,7 @@ function allClearIntervals(val) {
   }
   // else if (gameStatus === "NONE") {
   // }
-  const pageRefreshTime = getRndInteger(170000, 350000);
+  const pageRefreshTime = getRndInteger(150000, 300000);
   console.log('pageRefreshTime', pageRefreshTime);
   intervalNone = setTimeout(() => {
     MenuClick(7);
