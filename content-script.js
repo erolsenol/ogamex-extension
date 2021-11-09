@@ -190,6 +190,8 @@ top: 15px;
 `,
 );
 btngalaxyRight.addEventListener('click', () => {
+  const galaxySpy = storageGet('galaxySpy')
+  if(galaxySpy === null) 
   galaxyRouteInitialize();
   console.log('gameStatus GALAYSPY Set');
   gameStatus = 'GALAXYSPY';
@@ -1759,7 +1761,7 @@ function allClearIntervals(val) {
         // if (swal2_actions) swal2_actions.children[0].click();
         // else
         galaxyStart(storageGet('galaxySpy'));
-      }, getRndInteger(450, 600));
+      }, getRndInteger(430, 550));
     }
   } else if (gameStatus === 'MESSAGE') {
     allClearIntervals('messageInterval');
