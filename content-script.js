@@ -991,7 +991,7 @@ function galaxyStart(direction) {
           direction.galaxy = direction.galaxy - 1;
           direction.system = getRndInteger(450, 499);
 
-          if (direction.galaxy <= 3 && stopSystemVal > direction.system) {
+          if (direction.galaxy < 3) {
             direction.start = false;
             gameStatus = 'MESSAGE';
             storageSet('gameStatus', gameStatus);
@@ -1017,7 +1017,7 @@ function galaxyStart(direction) {
           direction.galaxy = direction.galaxy + 1;
           direction.system = getRndInteger(1, 49);
 
-          if (direction.galaxy >= 3 && direction.system > stopSystemVal) {
+          if (direction.galaxy > 3) {
             direction.start = false;
             console.log('gameStatus message');
             gameStatus = 'MESSAGE';
