@@ -214,6 +214,7 @@ btngalaxyStop.addEventListener('click', () => {
     storageSet('galaxySpy', direction);
     storageSet('gameStatus', gameStatus);
     storageSet('attacked', false);
+    storageSet('attackCoordinate', [0, 0, 0]);
     storageSet('enemyFleetPoint', 0);
     storageSet('enemyDefencePoint', 0);
 
@@ -235,6 +236,7 @@ btnMessageClear.addEventListener('click', () => {
   gameStatus = 'MESSAGE';
   storageSet('gameStatus', gameStatus);
   storageSet('attacked', false);
+  storageSet('attackCoordinate', [0, 0, 0]);
   const header = getIdItem('header');
   if (header) header.children[2].children[0].click();
   else MenuClick(0);
@@ -910,7 +912,7 @@ function liftShips() {
                   Date.now() / 1000,
                 );
                 gameTimer.shipProduced = currentTimeSpan + 1000 * 180;
-                storageSet('gameTimer',gameTimer)
+                storageSet('gameTimer', gameTimer);
                 //kaldik
               }, 1150);
             }
@@ -1274,6 +1276,7 @@ function messageClear() {
                         break;
                       } else {
                         storageSet('attacked', false);
+                        storageSet('attackCoordinate', [0, 0, 0]);
                         messageRow[
                           i
                         ].children[1].children[1].children[1].click();
@@ -1483,8 +1486,8 @@ function enemyAttack() {
               gameStatus = 'NONE';
               storageSet('gameTimer', gameTimer);
               storageSet('gameStatus', gameStatus);
-              storageSet('attackCoordinate', [0, 0, 0]);
               storageSet('attacked', false);
+              storageSet('attackCoordinate', [0, 0, 0]);
               storageSet('totalResource', 0);
               console.log('tikladiii');
               getIdItem(
