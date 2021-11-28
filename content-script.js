@@ -1334,7 +1334,7 @@ function enemyAttack() {
   if (knownCargoCapacity) {
     const fleet_content = getIdItem('fleet-content');
     if (fleet_content) {
-      if (totalFleet > currentFleet + 2) {
+      if (totalFleet > currentFleet + 1) {
         const ships =
           fleet_content.children[1].children[1].children[0].children;
         const enemyFleetPoint = StorageGetInitialize(
@@ -1363,7 +1363,7 @@ function enemyAttack() {
 
             const lightCargoRequired = mathStabileRound(
               totalResource / lightCargoCapacity +
-                getRndInteger(1000, 2000),
+                getRndInteger(300, 500),
             );
 
             if (
@@ -1372,7 +1372,7 @@ function enemyAttack() {
             ) {
               ships[i].children[1].children[0].value =
                 lightCargoRequired;
-              // break;
+              break;
             }
           } else if (
             ships[i].children[0].getAttribute('data-ship-type') ===
@@ -1393,7 +1393,7 @@ function enemyAttack() {
               storageSet("heavyCargoRequired", heavyCargoRequired);
               if (heavyCargoRequired <= parseInt(storageGet("HEAVY_CARGO"))) {
                 ships[i].children[1].children[0].value = heavyCargoRequired;
-                // break;
+                break;
               } else {
                 console.log("Yeterli Heavy Kargo Yok ");
                 gameStatus = "NONE";
@@ -1412,7 +1412,7 @@ function enemyAttack() {
           if (btn_next_fleet2) {
             btn_next_fleet2.click();
           }
-        }, 100);
+        }, 400);
         setTimeout(() => {
           const fleet2_target_coords_container = getIdItem(
             'fleet2_target_coords_container',
@@ -1432,7 +1432,7 @@ function enemyAttack() {
               // storageSet("attackCoordinate", [0, 0, 0]);
             }
           }
-        }, 850);
+        }, 1200);
         setTimeout(() => {
           const btn_submit_fleet = getIdItem('btn-submit-fleet');
           if (btn_submit_fleet) {
@@ -1447,7 +1447,7 @@ function enemyAttack() {
             storageSet('gameStatus', gameStatus);
             storageSet('attackCoordinate', [0, 0, 0]);
           }
-        }, 1600);
+        }, 1900);
       } else {
         const fleet_movement_detail_btn = getIdItem(
           'fleet-movement-detail-btn',
@@ -1800,13 +1800,13 @@ function allClearIntervals(val) {
           other_planets.children[0].children[0].click();
         }
       }
-    }, 2000);
+    }, 2500);
   } else if (gameStatus === 'UNDERATTACK') {
   } else if (gameStatus === 'SLEEP') {
   }
   // else if (gameStatus === "NONE") {
   // }
-  const pageRefreshTime = getRndInteger(150000, 300000);
+  const pageRefreshTime = getRndInteger(400000, 700000);
   console.log('pageRefreshTime', pageRefreshTime);
   intervalNone = setTimeout(() => {
     MenuClick(7);
