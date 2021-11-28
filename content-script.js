@@ -108,12 +108,13 @@ function galaxyRouteInitialize() {
   let galaxySpyStartVal = 0,
     systemSpyStartVal = 0,
     direction = 0;
-  direction = getRndInteger(0, 1);
+  // direction = getRndInteger(0, 1);
+  direction = 1;
   if (parseInt(direction) < 1) {
     galaxySpyStartVal = 1;
     systemSpyStartVal = getRndInteger(1, 60);
   } else {
-    galaxySpyStartVal = 4;
+    galaxySpyStartVal = 5;
     systemSpyStartVal = getRndInteger(440, 499);
   }
 
@@ -921,7 +922,7 @@ function liftShips() {
           }
         }
       } else {
-        MenuClick(5);
+        MenuClick(4);
       }
     }
   }
@@ -1051,7 +1052,7 @@ function galaxyStart(direction) {
     }
   } else {
     const left_Menu = getIdItem('left-menu-1');
-    if (left_Menu) left_Menu.children[8].children[0].click();
+    if (left_Menu) left_Menu.children[7].children[0].click();
   }
 }
 
@@ -1117,7 +1118,7 @@ function cargoCapacity() {
       }
     } else {
       const left_menu = getIdItem('left-menu-1');
-      if (left_menu) left_menu.children[5].children[0].click();
+      if (left_menu) left_menu.children[4].children[0].click();
     }
   } else {
     returnVal = true;
@@ -1165,7 +1166,7 @@ function asteroidMining() {
       // }
     }
   } else {
-    MenuClick(8);
+    MenuClick(7);
   }
 }
 
@@ -1254,7 +1255,7 @@ function messageClear() {
                         .children[0].innerText,
                     ),
                   );
-                  if (totalResource > 600000000) {
+                  if (totalResource > 500000000) {
                     if (!isDelete) {
                       const coordinateText =
                         messageRow[i].children[1].children[0]
@@ -1372,22 +1373,6 @@ function enemyAttack() {
               ships[i].children[1].children[0].value =
                 lightCargoRequired;
               // break;
-            } else {
-              console.log('Yeterli Light Kargo Yok ');
-              // const totalResource = parseInt(storageGet("totalResource"));
-              // const heavyCargoRequired = mathStabileRound(
-              //   totalResource / 2 / heavyCargoCapacity + getRndInteger(100, 400)
-              // );
-              // console.log("heavyCargoRequired", heavyCargoRequired);
-              // storageSet("heavyCargoRequired", heavyCargoRequired);
-              // if (heavyCargoRequired <= parseInt(storageGet("HEAVY_CARGO"))) {
-              //   ships[i].children[1].children[0].value = heavyCargoRequired;
-              //   // break;
-              // } else {
-              //   console.log("Yeterli Heavy Kargo Yok ");
-              //   gameStatus = "NONE";
-              //   storageSet("gameStatus", gameStatus);
-              // }
             }
           } else if (
             ships[i].children[0].getAttribute('data-ship-type') ===
@@ -1400,6 +1385,20 @@ function enemyAttack() {
                 '',
               ),
             );
+
+            const totalResource = parseInt(storageGet("totalResource"));
+              const heavyCargoRequired = mathStabileRound(
+                totalResource / heavyCargoCapacity + getRndInteger(50, 100)
+              );
+              storageSet("heavyCargoRequired", heavyCargoRequired);
+              if (heavyCargoRequired <= parseInt(storageGet("HEAVY_CARGO"))) {
+                ships[i].children[1].children[0].value = heavyCargoRequired;
+                // break;
+              } else {
+                console.log("Yeterli Heavy Kargo Yok ");
+                gameStatus = "NONE";
+                storageSet("gameStatus", gameStatus);
+              }
           }
         }
 
@@ -1492,9 +1491,9 @@ function enemyAttack() {
               storageSet('attackCoordinate', [0, 0, 0]);
               storageSet('totalResource', 0);
               console.log('tikladiii');
-              getIdItem(
-                'left-menu-1',
-              ).children[7].children[0].click();
+              // getIdItem(
+              //   'left-menu-1',
+              // ).children[7].children[0].click();
               MenuClick(7);
               break;
             }
@@ -1659,7 +1658,7 @@ function discoveryStart() {
             gameRoute.discovery = true;
             storageSet('gameRoute', gameRoute);
             storageSet('gameStatus', gameStatus);
-            MenuClick(7);
+            MenuClick(6);
             return;
           }
         }
@@ -1786,6 +1785,7 @@ function allClearIntervals(val) {
   } else if (gameStatus === 'ATTACK') {
     allClearIntervals('attackInterval');
     console.log('enum ATTACK');
+    enemyAttack();
     attackInterval = setInterval(() => {
       dataInitialize();
       const other_planets = getIdItem('other-planets');
