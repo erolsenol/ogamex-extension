@@ -108,12 +108,12 @@ function galaxyRouteInitialize() {
   let galaxySpyStartVal = 0,
     systemSpyStartVal = 0,
     direction = 0;
-  direction = getRndInteger(0, 1);
+  direction = 1;
   if (parseInt(direction) < 1) {
     galaxySpyStartVal = 1;
     systemSpyStartVal = getRndInteger(1, 60);
   } else {
-    galaxySpyStartVal = 4;
+    galaxySpyStartVal = 5;
     systemSpyStartVal = getRndInteger(440, 499);
   }
 
@@ -190,9 +190,8 @@ top: 15px;
 `,
 );
 btngalaxyRight.addEventListener('click', () => {
-  const galaxySpy = storageGet('galaxySpy')
-  if(galaxySpy === null) 
-  galaxyRouteInitialize();
+  const galaxySpy = storageGet('galaxySpy');
+  if (galaxySpy === null) galaxyRouteInitialize();
   console.log('gameStatus GALAYSPY Set');
   gameStatus = 'GALAXYSPY';
   storageSet('gameStatus', gameStatus);
@@ -921,7 +920,7 @@ function liftShips() {
           }
         }
       } else {
-        MenuClick(5);
+        MenuClick(6);
       }
     }
   }
@@ -1051,7 +1050,7 @@ function galaxyStart(direction) {
     }
   } else {
     const left_Menu = getIdItem('left-menu-1');
-    if (left_Menu) left_Menu.children[8].children[0].click();
+    if (left_Menu) left_Menu.children[7].children[0].click();
   }
 }
 
@@ -1117,7 +1116,7 @@ function cargoCapacity() {
       }
     } else {
       const left_menu = getIdItem('left-menu-1');
-      if (left_menu) left_menu.children[5].children[0].click();
+      if (left_menu) left_menu.children[4].children[0].click();
     }
   } else {
     returnVal = true;
@@ -1165,7 +1164,7 @@ function asteroidMining() {
       // }
     }
   } else {
-    MenuClick(8);
+    MenuClick(7);
   }
 }
 
@@ -1254,7 +1253,7 @@ function messageClear() {
                         .children[0].innerText,
                     ),
                   );
-                  if (totalResource > 600000000) {
+                  if (totalResource > 10000000) {
                     if (!isDelete) {
                       const coordinateText =
                         messageRow[i].children[1].children[0]
@@ -1764,7 +1763,7 @@ function allClearIntervals(val) {
         // if (swal2_actions) swal2_actions.children[0].click();
         // else
         galaxyStart(storageGet('galaxySpy'));
-      }, getRndInteger(430, 550));
+      }, getRndInteger(550, 750));
     }
   } else if (gameStatus === 'MESSAGE') {
     allClearIntervals('messageInterval');
@@ -1788,18 +1787,19 @@ function allClearIntervals(val) {
     console.log('enum ATTACK');
     attackInterval = setInterval(() => {
       dataInitialize();
-      const other_planets = getIdItem('other-planets');
-      if (other_planets) {
-        if (
-          other_planets.children[0]
-            .getAttribute('class')
-            .indexOf('selected') > -1
-        ) {
-          enemyAttack();
-        } else {
-          other_planets.children[0].children[0].click();
-        }
-      }
+      // const other_planets = getIdItem('other-planets');
+      // if (other_planets) {
+      //   if (
+      //     other_planets.children[0]
+      //       .getAttribute('class')
+      //       .indexOf('selected') > -1
+      //   ) {
+      //     enemyAttack();
+      //   } else {
+      //     other_planets.children[0].children[0].click();
+      //   }
+      // }
+      enemyAttack();
     }, 2000);
   } else if (gameStatus === 'UNDERATTACK') {
   } else if (gameStatus === 'SLEEP') {
