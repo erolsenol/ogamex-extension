@@ -1,5 +1,5 @@
 {
-  "name": "Atlas.Ogamex",
+  "name": "Pallstock",
   "version": "1.0",
   "manifest_version": 3,
   "permissions": ["tabs", "scripting", "webNavigation", "activeTab", "background", "storage"],
@@ -9,7 +9,7 @@
   "action": {},
   "content_scripts": [
     {
-      "matches": ["https://atlas.ogamex.net/*"],
+      "matches": ["https://panel.pallstock.com/inventory*"],
       "all_frames": true,
       "js": ["content-script.js"],
       "run_at": "document_end"
