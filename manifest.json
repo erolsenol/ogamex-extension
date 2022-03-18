@@ -9,7 +9,7 @@
   "action": {},
   "content_scripts": [
     {
-      "matches": ["https://atlas.ogamex.net/*"],
+      "matches": ["https://sellercentral.amazon.sg/inventory*"],
       "all_frames": true,
       "js": ["content-script.js"],
       "run_at": "document_end"
