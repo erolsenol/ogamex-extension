@@ -1,4 +1,3 @@
-console.log('content run');
 function mathStabileRound(number) {
   const roundedNumber = Math.round(number + 1);
   if (roundedNumber - 1 > number) return Math.round(number);
@@ -30,7 +29,23 @@ function StorageGetInitialize(name, value) {
   return item;
 }
 
-setTimeout(() => {
+const myHeading = document.getElementById('myi-heading');
+if (myHeading) {
+  let myButton = document.createElement('button');
+  myButton.innerText = 'Bana Bas';
+  myButton.setAttribute(
+    'style',
+    `
+  position: relative; 
+  left: 50px;
+  color:red;
+  `,
+  );
+  myButton.addEventListener('click', Action);
+  myHeading.append(myButton);
+}
+
+function Action() {
   const mainTable = document.getElementById('head-row');
   const tableTR = mainTable.parentElement.children;
 
@@ -44,26 +59,26 @@ setTimeout(() => {
       ].children[10].children[0].children[9].children[0].children[0].children[0].click();
     }
   }
-}, 13000);
 
-setTimeout(() => {
-  const mainTable = document.getElementById('head-row');
-  const tableTR = mainTable.parentElement.children;
+  setTimeout(() => {
+    const mainTable = document.getElementById('head-row');
+    const tableTR = mainTable.parentElement.children;
 
-  for (let i = 1; i < tableTR.length; i++) {
-    if (
-      tableTR[i].children[10].children[0].children[9].children
-        .length > 0
-    ) {
-      let itemSellPrice = parseFloat(
-        tableTR[i].children[10].children[0].children[0].children[0]
-          .children[0].children[1].value,
-      );
+    for (let i = 1; i < tableTR.length; i++) {
+      if (
+        tableTR[i].children[10].children[0].children[9].children
+          .length > 0
+      ) {
+        let itemSellPrice = parseFloat(
+          tableTR[i].children[10].children[0].children[0].children[0]
+            .children[0].children[1].value,
+        );
 
-      tableTR[
-        i
-      ].children[10].children[0].children[0].children[0].children[0].children[1].value =
-        (itemSellPrice - 0.01).toFixed(2);
+        tableTR[
+          i
+        ].children[10].children[0].children[0].children[0].children[0].children[1].value =
+          (itemSellPrice - 0.01).toFixed(2);
+      }
     }
-  }
-}, 16000);
+  }, 2500);
+}
