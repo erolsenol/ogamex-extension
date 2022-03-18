@@ -1,15 +1,25 @@
 {
-  "name": "Atlas.Ogamex",
-  "version": "1.0",
+  "name": "Match-Sg",
+  "version": "1.1",
   "manifest_version": 3,
-  "permissions": ["tabs", "scripting", "webNavigation", "activeTab", "background", "storage"],
+  "permissions": [
+    "tabs",
+    "scripting",
+    "webNavigation",
+    "activeTab",
+    "background",
+    "storage"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {},
   "content_scripts": [
     {
-      "matches": ["https://sellercentral.amazon.sg/inventory*"],
+      "matches": [
+        "https://sellercentral.amazon.ae/inventory*",
+        "https://sellercentral.amazon.sg/inventory*"
+      ],
       "all_frames": true,
       "js": ["content-script.js"],
       "run_at": "document_end"

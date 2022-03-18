@@ -1,3 +1,4 @@
+console.log('content run');
 function mathStabileRound(number) {
   const roundedNumber = Math.round(number + 1);
   if (roundedNumber - 1 > number) return Math.round(number);
@@ -66,5 +67,3 @@ setTimeout(() => {
     }
   }
 }, 16000);
-
-
