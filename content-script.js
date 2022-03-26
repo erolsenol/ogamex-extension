@@ -132,10 +132,11 @@ setInterval(() => {
 
 setInterval(() => {
   const lastStartTimer = localStorage.getItem('lastTime');
+  const isStart = localStorage.getItem('start');
   const nowTime = Date.now();
-  console.log('lastStartTimer', lastStartTimer);
 
-  if (lastStartTimer + 15000000 < nowTime) {
+  if (isStart == 'false' && lastStartTimer + 2000000 < nowTime) {
+    console.log('start over');
     buttonClick();
   }
 }, 30000);
