@@ -41,8 +41,16 @@ if (myHeading) {
   color:red;
   `,
   );
-  myButton.addEventListener('click', Action);
+  myButton.addEventListener('click', buttonClick);
   myHeading.append(myButton);
+}
+
+function buttonClick() {
+  const nowTime = Date.now();
+  console.log('nowTime', nowTime);
+  localStorage.setItem('lastTime', nowTime);
+  localStorage.setItem('start', true);
+  Action();
 }
 
 function Action() {
@@ -81,4 +89,53 @@ function Action() {
       }
     }
   }, 2500);
+
+  setTimeout(() => {
+    const saveAllButton = document.getElementById(
+      'a-autoid-4-announce',
+    );
+    if (saveAllButton) {
+      saveAllButton.click();
+    }
+  }, 5000);
+
+  setTimeout(() => {
+    const disableNext = document.querySelector(
+      'li[class="a-disabled a-last"]',
+    );
+    if (disableNext) {
+      const paginationEl = document.querySelector('.a-pagination');
+      if (paginationEl) {
+        paginationEl.children[1].children[0].click();
+        localStorage.setItem('start', false);
+        window.location.reload();
+      }
+    } else {
+      const lastButton = document.querySelector('li[class="a-last"]');
+      console.log('lastButton', lastButton);
+      if (lastButton) {
+        lastButton.children[0].click();
+      }
+    }
+  }, 10000);
 }
+
+setInterval(() => {
+  const isStart = localStorage.getItem('start');
+  if (isStart == 'true') {
+    console.log('is started');
+    Action();
+  } else {
+    console.log('is Stopped');
+  }
+}, 60000);
+
+setInterval(() => {
+  const lastStartTimer = localStorage.getItem('lastTime');
+  const nowTime = Date.now();
+  console.log('lastStartTimer', lastStartTimer);
+
+  if (lastStartTimer + 15000000 < nowTime) {
+    buttonClick();
+  }
+}, 30000);
