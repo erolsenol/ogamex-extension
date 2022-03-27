@@ -141,9 +141,9 @@ setInterval(() => {
 
   if (
     isStart == 'false' &&
-    parseInt(lastStartTimer) + 60000 < nowTime
+    parseInt(lastStartTimer) + 1500000 < nowTime
   ) {
     console.log('start over');
     buttonClick();
   }
-}, 10000);
+}, 60000);
