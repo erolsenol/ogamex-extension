@@ -54,20 +54,6 @@ function buttonClick() {
 }
 
 function Action() {
-  const mainTable = document.getElementById('head-row');
-  const tableTR = mainTable.parentElement.children;
-
-  for (let i = 1; i < tableTR.length; i++) {
-    if (
-      tableTR[i].children[10].children[0].children[9].children
-        .length > 0
-    ) {
-      tableTR[
-        i
-      ].children[10].children[0].children[9].children[0].children[0].children[0].click();
-    }
-  }
-
   setTimeout(() => {
     const mainTable = document.getElementById('head-row');
     const tableTR = mainTable.parentElement.children;
@@ -77,18 +63,35 @@ function Action() {
         tableTR[i].children[10].children[0].children[9].children
           .length > 0
       ) {
-        let itemSellPrice = parseFloat(
-          tableTR[i].children[10].children[0].children[0].children[0]
-            .children[0].children[1].value,
-        );
-
         tableTR[
           i
-        ].children[10].children[0].children[0].children[0].children[0].children[1].value =
-          (itemSellPrice - 0.01).toFixed(2);
+        ].children[10].children[0].children[9].children[0].children[0].children[0].click();
       }
     }
-  }, 2500);
+    console.log('match items');
+  }, 12000);
+
+  // setTimeout(() => {
+  //   const mainTable = document.getElementById('head-row');
+  //   const tableTR = mainTable.parentElement.children;
+
+  //   for (let i = 1; i < tableTR.length; i++) {
+  //     if (
+  //       tableTR[i].children[10].children[0].children[9].children
+  //         .length > 0
+  //     ) {
+  //       let itemSellPrice = parseFloat(
+  //         tableTR[i].children[10].children[0].children[0].children[0]
+  //           .children[0].children[1].value,
+  //       );
+
+  //       tableTR[
+  //         i
+  //       ].children[10].children[0].children[0].children[0].children[0].children[1].value =
+  //         (itemSellPrice - 0.01).toFixed(2);
+  //     }
+  //   }
+  // }, 2500);
 
   setTimeout(() => {
     const saveAllButton = document.getElementById(
@@ -97,7 +100,8 @@ function Action() {
     if (saveAllButton) {
       saveAllButton.click();
     }
-  }, 5000);
+    console.log('save all button click');
+  }, 25000);
 
   setTimeout(() => {
     const disableNext = document.querySelector(
@@ -108,22 +112,22 @@ function Action() {
       if (paginationEl) {
         paginationEl.children[1].children[0].click();
         localStorage.setItem('start', false);
-        window.location.reload();
       }
+      console.log('from to starting page run');
     } else {
       const lastButton = document.querySelector('li[class="a-last"]');
-      console.log('lastButton', lastButton);
       if (lastButton) {
         lastButton.children[0].click();
       }
+      console.log('next page');
     }
-  }, 10000);
+  }, 40000);
 }
 
 setInterval(() => {
   const isStart = localStorage.getItem('start');
   if (isStart == 'true') {
-    console.log('is started');
+    console.log('page script start again');
     Action();
   } else {
     console.log('is Stopped');
@@ -135,8 +139,11 @@ setInterval(() => {
   const isStart = localStorage.getItem('start');
   const nowTime = Date.now();
 
-  if (isStart == 'false' && lastStartTimer + 2000000 < nowTime) {
+  if (
+    isStart == 'false' &&
+    parseInt(lastStartTimer) + 60000 < nowTime
+  ) {
     console.log('start over');
     buttonClick();
   }
-}, 30000);
+}, 10000);
