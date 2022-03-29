@@ -56,19 +56,22 @@ function buttonClick() {
 function Action() {
   setTimeout(() => {
     const mainTable = document.getElementById('head-row');
-    const tableTR = mainTable.parentElement.children;
+    console.log('mainTable', mainTable);
+    if (mainTable) {
+      const tableTR = mainTable.parentElement.children;
 
-    for (let i = 1; i < tableTR.length; i++) {
-      if (
-        tableTR[i].children[10].children[0].children[9].children
-          .length > 0
-      ) {
-        tableTR[
-          i
-        ].children[10].children[0].children[9].children[0].children[0].children[0].click();
+      for (let i = 1; i < tableTR.length; i++) {
+        if (
+          tableTR[i].children[10].children[0].children[9].children
+            .length > 0
+        ) {
+          tableTR[
+            i
+          ].children[10].children[0].children[9].children[0].children[0].children[0].click();
+        }
       }
+      console.log('match items');
     }
-    console.log('match items');
   }, 12000);
 
   // setTimeout(() => {
@@ -118,13 +121,22 @@ function Action() {
       const lastButton = document.querySelector('li[class="a-last"]');
       if (lastButton) {
         lastButton.children[0].click();
+        console.log('next page');
       }
-      console.log('next page');
     }
   }, 40000);
 }
 
-setInterval(() => {
+const LSPageActionInterval = StorageGetInitialize(
+  'pageActionInterval',
+  false,
+);
+console.log(LSPageActionInterval);
+if (LSPageActionInterval) {
+  clearInterval(LSPageActionInterval);
+}
+
+const pageActionInterval = setInterval(() => {
   const isStart = localStorage.getItem('start');
   if (isStart == 'true') {
     console.log('page script start again');
@@ -133,8 +145,18 @@ setInterval(() => {
     console.log('is Stopped');
   }
 }, 60000);
+storageSet('pageActionInterval', pageActionInterval);
 
-setInterval(() => {
+const LSPageStartAgainInterval = StorageGetInitialize(
+  'pageStartAgainInterval',
+  false,
+);
+console.log(LSPageStartAgainInterval);
+if (LSPageStartAgainInterval) {
+  clearInterval(LSPageStartAgainInterval);
+}
+
+const pageStartAgainInterval = setInterval(() => {
   const lastStartTimer = localStorage.getItem('lastTime');
   const isStart = localStorage.getItem('start');
   const nowTime = Date.now();
@@ -146,4 +168,5 @@ setInterval(() => {
     console.log('start over');
     buttonClick();
   }
-}, 60000);
+}, 90000);
+storageSet('pageStartAgainInterval', pageStartAgainInterval);
