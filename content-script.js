@@ -54,6 +54,7 @@ function buttonClick() {
 }
 
 let isClickMatchAll = false;
+let isClickSaveAllItems = false;
 
 function Action() {
   setTimeout(() => {
@@ -70,9 +71,9 @@ function Action() {
           tableTR[
             i
           ].children[10].children[0].children[9].children[0].children[0].children[0].click();
-          isClickMatchAll = true;
         }
       }
+      isClickMatchAll = true;
       console.log('match items');
     }
   }, 12000);
@@ -105,6 +106,7 @@ function Action() {
     );
     if (saveAllButton) {
       saveAllButton.click();
+      isClickSaveAllItems = true;
     }
     console.log('save all button click');
   }, 25000);
@@ -122,10 +124,11 @@ function Action() {
       console.log('from to starting page run');
     } else {
       const lastButton = document.querySelector('li[class="a-last"]');
-      if (lastButton && isClickMatchAll) {
+      if (lastButton && isClickMatchAll && isClickSaveAllItems) {
         lastButton.children[0].click();
         console.log('next page');
         isClickMatchAll = false;
+        isClickSaveAllItems = false;
       }
     }
   }, 40000);
