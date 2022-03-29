@@ -53,6 +53,8 @@ function buttonClick() {
   Action();
 }
 
+let isClickMatchAll = false;
+
 function Action() {
   setTimeout(() => {
     const mainTable = document.getElementById('head-row');
@@ -68,6 +70,7 @@ function Action() {
           tableTR[
             i
           ].children[10].children[0].children[9].children[0].children[0].children[0].click();
+          isClickMatchAll = true;
         }
       }
       console.log('match items');
@@ -119,9 +122,10 @@ function Action() {
       console.log('from to starting page run');
     } else {
       const lastButton = document.querySelector('li[class="a-last"]');
-      if (lastButton) {
+      if (lastButton && isClickMatchAll) {
         lastButton.children[0].click();
         console.log('next page');
+        isClickMatchAll = false;
       }
     }
   }, 40000);
