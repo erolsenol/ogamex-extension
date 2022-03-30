@@ -76,7 +76,7 @@ function Action() {
       isClickMatchAll = true;
       console.log('match items');
     }
-  }, 12000);
+  }, 5000);
 
   // setTimeout(() => {
   //   const mainTable = document.getElementById('head-row');
@@ -109,7 +109,7 @@ function Action() {
       isClickSaveAllItems = true;
     }
     console.log('save all button click');
-  }, 25000);
+  }, 11000);
 
   setTimeout(() => {
     const disableNext = document.querySelector(
@@ -123,15 +123,30 @@ function Action() {
       }
       console.log('from to starting page run');
     } else {
+      const buttonSpans = document.querySelectorAll(
+        'span.a-dropdown-prompt',
+      );
+      let isSaveButtonActive = false;
+      if (buttonSpans.length > 0) {
+        for (let index = 0; index < buttonSpans.length; index++) {
+          if (buttonSpans[index].innerText == 'Save')
+            isSaveButtonActive = true;
+        }
+      }
       const lastButton = document.querySelector('li[class="a-last"]');
-      if (lastButton && isClickMatchAll && isClickSaveAllItems) {
+      if (
+        lastButton &&
+        !isSaveButtonActive &&
+        isClickMatchAll &&
+        isClickSaveAllItems
+      ) {
         lastButton.children[0].click();
         console.log('next page');
         isClickMatchAll = false;
         isClickSaveAllItems = false;
       }
     }
-  }, 40000);
+  }, 20000);
 }
 
 const LSPageActionInterval = StorageGetInitialize(
@@ -151,7 +166,7 @@ const pageActionInterval = setInterval(() => {
   } else {
     console.log('is Stopped');
   }
-}, 60000);
+}, 30000);
 storageSet('pageActionInterval', pageActionInterval);
 
 const LSPageStartAgainInterval = StorageGetInitialize(
@@ -175,5 +190,5 @@ const pageStartAgainInterval = setInterval(() => {
     console.log('start over');
     buttonClick();
   }
-}, 90000);
+}, 60000);
 storageSet('pageStartAgainInterval', pageStartAgainInterval);
