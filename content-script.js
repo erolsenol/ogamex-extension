@@ -114,7 +114,7 @@ function galaxyRouteInitialize() {
     galaxySpyStartVal = 1;
     systemSpyStartVal = getRndInteger(1, 60);
   } else {
-    galaxySpyStartVal = 5;
+    galaxySpyStartVal = 6;
     systemSpyStartVal = getRndInteger(440, 499);
   }
 
@@ -191,9 +191,8 @@ top: 15px;
 `,
 );
 btngalaxyRight.addEventListener('click', () => {
-  const galaxySpy = storageGet('galaxySpy')
-  if(galaxySpy === null) 
-  galaxyRouteInitialize();
+  const galaxySpy = storageGet('galaxySpy');
+  if (galaxySpy === null) galaxyRouteInitialize();
   console.log('gameStatus GALAYSPY Set');
   gameStatus = 'GALAXYSPY';
   storageSet('gameStatus', gameStatus);
@@ -1386,19 +1385,26 @@ function enemyAttack() {
               ),
             );
 
-            const totalResource = parseInt(storageGet("totalResource"));
-              const heavyCargoRequired = mathStabileRound(
-                totalResource / heavyCargoCapacity + getRndInteger(50, 100)
-              );
-              storageSet("heavyCargoRequired", heavyCargoRequired);
-              if (heavyCargoRequired <= parseInt(storageGet("HEAVY_CARGO"))) {
-                ships[i].children[1].children[0].value = heavyCargoRequired;
-                break;
-              } else {
-                console.log("Yeterli Heavy Kargo Yok ");
-                gameStatus = "NONE";
-                storageSet("gameStatus", gameStatus);
-              }
+            const totalResource = parseInt(
+              storageGet('totalResource'),
+            );
+            const heavyCargoRequired = mathStabileRound(
+              totalResource / heavyCargoCapacity +
+                getRndInteger(50, 100),
+            );
+            storageSet('heavyCargoRequired', heavyCargoRequired);
+            if (
+              heavyCargoRequired <=
+              parseInt(storageGet('HEAVY_CARGO'))
+            ) {
+              ships[i].children[1].children[0].value =
+                heavyCargoRequired;
+              break;
+            } else {
+              console.log('Yeterli Heavy Kargo Yok ');
+              gameStatus = 'NONE';
+              storageSet('gameStatus', gameStatus);
+            }
           }
         }
 
