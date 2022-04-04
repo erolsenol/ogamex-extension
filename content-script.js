@@ -114,7 +114,12 @@ function galaxyRouteInitialize() {
     galaxySpyStartVal = 1;
     systemSpyStartVal = getRndInteger(1, 60);
   } else {
-    galaxySpyStartVal = 6;
+    const targetSystemValue = document.getElementById(
+      'spy-system-value',
+    );
+    if (targetSystemValue && targetSystemValue.value)
+      galaxySpyStartVal = targetSystemValue.value;
+    else galaxySpyStartVal = 6;
     systemSpyStartVal = getRndInteger(440, 499);
   }
 
@@ -154,6 +159,7 @@ top: 6px;
 
 let inputSpySystemValue = document.createElement('input');
 inputSpySystemValue.placeholder = 'Spy Targeted System';
+inputSpySystemValue.setAttribute('id', 'spy-system-value');
 inputSpySystemValue.setAttribute(
   'style',
   `
@@ -1254,7 +1260,7 @@ function messageClear() {
                         .children[0].innerText,
                     ),
                   );
-                  if (totalResource > 500000000) {
+                  if (totalResource > 1500000000) {
                     if (!isDelete) {
                       const coordinateText =
                         messageRow[i].children[1].children[0]
@@ -1418,7 +1424,7 @@ function enemyAttack() {
           if (btn_next_fleet2) {
             btn_next_fleet2.click();
           }
-        }, 400);
+        }, 550);
         setTimeout(() => {
           const fleet2_target_coords_container = getIdItem(
             'fleet2_target_coords_container',
@@ -1438,7 +1444,7 @@ function enemyAttack() {
               // storageSet("attackCoordinate", [0, 0, 0]);
             }
           }
-        }, 1200);
+        }, 1400);
         setTimeout(() => {
           const btn_submit_fleet = getIdItem('btn-submit-fleet');
           if (btn_submit_fleet) {
@@ -1453,7 +1459,7 @@ function enemyAttack() {
             storageSet('gameStatus', gameStatus);
             storageSet('attackCoordinate', [0, 0, 0]);
           }
-        }, 1900);
+        }, 2100);
       } else {
         const fleet_movement_detail_btn = getIdItem(
           'fleet-movement-detail-btn',
@@ -1743,7 +1749,7 @@ function allClearIntervals(val) {
     setInterval(() => {
       dataInitialize();
       messageClear();
-    }, 1100);
+    }, 1500);
   }
 
   if (gameStatus === 'DISCOVERY') {
@@ -1769,7 +1775,7 @@ function allClearIntervals(val) {
         // if (swal2_actions) swal2_actions.children[0].click();
         // else
         galaxyStart(storageGet('galaxySpy'));
-      }, getRndInteger(430, 550));
+      }, getRndInteger(550, 850));
     }
   } else if (gameStatus === 'MESSAGE') {
     allClearIntervals('messageInterval');
@@ -1787,7 +1793,7 @@ function allClearIntervals(val) {
           other_planets.children[0].children[0].click();
         }
       }
-    }, 1000);
+    }, 1500);
   } else if (gameStatus === 'ATTACK') {
     allClearIntervals('attackInterval');
     console.log('enum ATTACK');
@@ -1812,7 +1818,7 @@ function allClearIntervals(val) {
   }
   // else if (gameStatus === "NONE") {
   // }
-  const pageRefreshTime = getRndInteger(400000, 700000);
+  const pageRefreshTime = getRndInteger(500000, 900000);
   console.log('pageRefreshTime', pageRefreshTime);
   intervalNone = setTimeout(() => {
     MenuClick(7);
