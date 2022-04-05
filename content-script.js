@@ -53,6 +53,23 @@ function buttonClick() {
   Action();
 }
 
+let countryText = null;
+
+setTimeout(() => {
+  const countrySelected = document.getElementById('partner-switcher');
+  console.log(countrySelected);
+  if (countrySelected) {
+    const countryElText =
+      countrySelected.children[0].children[0].innerText;
+    if (countryElText) {
+      countryText = countryElText.substring(
+        countryElText.length - 1,
+        1,
+      );
+    }
+  }
+}, 3500);
+
 let isClickMatchAll = false;
 let isClickSaveAllItems = false;
 
@@ -64,13 +81,24 @@ function Action() {
       const tableTR = mainTable.parentElement.children;
 
       for (let i = 1; i < tableTR.length; i++) {
-        if (
-          tableTR[i].children[10].children[0].children[9].children
-            .length > 0
-        ) {
-          tableTR[
-            i
-          ].children[10].children[0].children[9].children[0].children[0].children[0].click();
+        if (countryText == `ETAS'TORE | Singapor`) {
+          if (
+            tableTR[i].children[10].children[0].children[10].children
+              .length > 0
+          ) {
+            tableTR[
+              i
+            ].children[10].children[0].children[10].children[0].children[0].children[0].click();
+          }
+        } else {
+          if (
+            tableTR[i].children[10].children[0].children[10].children
+              .length > 0
+          ) {
+            tableTR[
+              i
+            ].children[10].children[0].children[10].children[0].children[0].children[0].click();
+          }
         }
       }
       isClickMatchAll = true;
