@@ -1056,8 +1056,13 @@ function galaxyStart(direction) {
       });
     }
   } else {
+    const debris = document.querySelector(
+      "div[classs='menu-item btn-planet-debris ']",
+    );
     const left_Menu = getIdItem('left-menu-1');
-    if (left_Menu) left_Menu.children[7].children[0].click();
+    if (debris)
+      if (left_Menu) left_Menu.children[8].children[0].click();
+      else if (left_Menu) left_Menu.children[7].children[0].click();
   }
 }
 
@@ -1122,8 +1127,14 @@ function cargoCapacity() {
         }
       }
     } else {
+      const debris = document.querySelector(
+        "div[classs='menu-item btn-planet-debris ']",
+      );
       const left_menu = getIdItem('left-menu-1');
-      if (left_menu) left_menu.children[4].children[0].click();
+      if (left_menu) {
+        if (debris) left_menu.children[6].children[0].click();
+        else left_menu.children[5].children[0].click();
+      }
     }
   } else {
     returnVal = true;
