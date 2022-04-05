@@ -230,6 +230,18 @@ btngalaxyStop.addEventListener('click', () => {
     if (left_menu) left_menu.children[0].children[0].click();
   }
 });
+let btnGameReset = document.createElement('button');
+btnGameReset.innerText = 'Game Reset';
+btnGameReset.setAttribute(
+  'style',
+  `
+position: relative; 
+top: 23px;
+`,
+);
+btnGameReset.addEventListener('click', () => {
+  localStorage.clear();
+});
 
 let btnMessageClear = document.createElement('button');
 btnMessageClear.innerText = 'Message Clear';
@@ -488,6 +500,7 @@ document.getElementById('left-menu-1').append(btngalaxyRight);
 document.getElementById('left-menu-1').append(btnMessageClear);
 document.getElementById('left-menu-1').append(btnDiscoveryStart);
 document.getElementById('left-menu-1').append(btngalaxyStop);
+document.getElementById('left-menu-1').append(btnGameReset);
 // document.getElementById("left-menu-1").append(btnspyReportsAttack);
 // document.getElementById("left-menu-1").append(btnenemyLootAttack);
 document.getElementById('left-menu-1').append(labelSpyReportDefence);
@@ -1057,12 +1070,13 @@ function galaxyStart(direction) {
     }
   } else {
     const debris = document.querySelector(
-      "div[classs='menu-item btn-planet-debris ']",
+      "div[class='menu-item btn-planet-debris ']",
     );
     const left_Menu = getIdItem('left-menu-1');
-    if (debris)
-      if (left_Menu) left_Menu.children[8].children[0].click();
-      else if (left_Menu) left_Menu.children[7].children[0].click();
+    if (left_Menu) {
+      if (debris) left_Menu.children[8].children[0].click();
+      else left_Menu.children[7].children[0].click();
+    }
   }
 }
 
