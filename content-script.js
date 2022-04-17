@@ -1285,7 +1285,7 @@ function messageClear() {
                         .children[0].innerText,
                     ),
                   );
-                  if (totalResource > 1500000000) {
+                  if (totalResource > 3500000000) {
                     if (!isDelete) {
                       const coordinateText =
                         messageRow[i].children[1].children[0]
