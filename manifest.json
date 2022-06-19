@@ -9,7 +9,7 @@
   "action": {},
   "content_scripts": [
     {
-      "matches": ["https://omega.ogamex.net/*"],
+      "matches": ["https://luna.ogamex.net/*"],
       "all_frames": true,
       "js": ["content-script.js"],
       "run_at": "document_end"
