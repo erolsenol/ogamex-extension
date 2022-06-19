@@ -29,15 +29,71 @@ function StorageGetInitialize(name, value) {
   return item;
 }
 
+let btngalaxyLeft = document.createElement('button');
+btngalaxyLeft.innerText = 'Start';
+btngalaxyLeft.setAttribute(
+  'style',
+  `
+position: relative;
+top: 0px;
+width: 100px;
+height: 40px;
+`,
+);
+btngalaxyLeft.addEventListener('click', () => {
+  storageSet('isStart', true);
+});
+
+const headerImage = document.querySelector('.text-img');
+if (headerImage) {
+  headerImage.appendChild(btngalaxyLeft);
+}
+
 setInterval(() => {
+  const startStatus = StorageGetInitialize('isStart', false);
+  if (!startStatus) return;
+
   const currentUrl = window.location.href;
-  console.log('currentUrl', currentUrl);
   console.log('window', window);
 
-  const products = document.querySelectorAll('.bgstretch');
-  console.log('products', products);
+  let arrOldProductsHref = StorageGetInitialize('productHrefs', []);
+  if (arrOldProductsHref.length < 1) {
+    const products = document.querySelectorAll('a[rel=nofollow]');
 
-  for (let index = 0; index < array.length; index++) {
-    const element = array[index];
+    if (products.length > 0) {
+      let arrProductsHref = [];
+
+      for (let index = 0; index < products.length; index++) {
+        if (products[index].href.includes('urun'))
+          arrProductsHref.push(products[index].href);
+      }
+      arrOldProductsHref = arrProductsHref;
+      storageSet('productHrefs', arrProductsHref);
+    } else {
+      console.log('no products', products);
+    }
+  } else {
+    let isProduct =
+      document.querySelector('.title-holder')?.length > 0;
+    if (isProduct) {
+      const ad = document.querySelector('.fancybox-close');
+      if (ad) ad.click();
+      const randomNumber = Math.floor(Math.random() * 10);
+
+      let new_comment_button = document.querySelector(
+        '#new-comment-button',
+      );
+      new_comment_button.click();
+      console.log('new_comment_button', new_comment_button);
+    } else {
+      const productGo = StorageGetInitialize('productGo', false);
+      if (productGo) {
+      } else {
+        storageSet('productGo', true);
+        const navigateProductUrl = arrOldProductsHref[0];
+        storageSet('productHrefs', arrOldProductsHref.splice(0, 1));
+        window.location.replace(navigateProductUrl);
+      }
+    }
   }
-}, 5000);
+}, 3000);
